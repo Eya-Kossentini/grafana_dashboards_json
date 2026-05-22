@@ -1,0 +1,682 @@
+apiVersion: 1
+groups:
+    - orgId: 1
+      name: Quality alerts
+      folder: Production KPIs
+      interval: 30s
+      rules:
+        - uid: bfm4wum8i4dmof
+          title: Scrap Rate Critical
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 604800
+                to: 0
+              datasourceUid: afm4rznroj11ce
+              model:
+                dataset: postgres
+                editorMode: code
+                format: table
+                intervalMs: 1000
+                maxDataPoints: 43200
+                rawQuery: true
+                rawSql: "SELECT\r\n    station_name,\r\n    MAX(defect_rate_pct) AS scrap_rate\r\nFROM public.defect_rate_kpi\r\nWHERE production_day >= NOW() - INTERVAL '7 days'\r\nGROUP BY station_name;"
+                refId: A
+                sql:
+                    columns:
+                        - parameters: []
+                          type: function
+                    groupBy:
+                        - property:
+                            type: string
+                          type: groupBy
+                    limit: 50
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 5
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          for: 30s
+          annotations:
+            description: |-
+                The scrap rate has exceeded 5% on at least one station/day in the last 7 days.
+                Maximum scrap rate detected: {{$values.B}}%.
+
+                Action required:
+                - Review last batch quality
+                - Check station calibration
+                - Audit operator workflow
+            summary: "\U0001F6A8 Scrap rate detected on {{ $labels.station_name }} at current rate {{$values.B}}% (threshold: 5%)"
+          isPaused: false
+          notification_settings:
+            receiver: grafana-default-email
+    - orgId: 1
+      name: defect-rate_alert
+      folder: Production KPIs
+      interval: 30s
+      rules:
+        - uid: ffm5wfmqfplhce
+          title: ❌ High defect rate detected
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: afm4rznroj11ce
+              model:
+                dataset: postgres
+                editorMode: code
+                format: table
+                intervalMs: 1000
+                maxDataPoints: 43200
+                rawQuery: true
+                rawSql: 'SELECT station_name, MAX(defect_rate_pct) AS scrap_rate FROM defect_rate_kpi GROUP BY station_name '
+                refId: A
+                sql:
+                    columns:
+                        - name: MAX
+                          parameters:
+                            - name: defect_rate_pct
+                              type: functionParameter
+                          type: function
+                    groupBy:
+                        - property:
+                            type: string
+                          type: groupBy
+                    limit: 50
+                table: defect_rate_kpi
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 5
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          for: 30s
+          annotations:
+            description: |-
+                Quality threshold exceeded.
+
+                Station: {{ $labels.station_name }}
+                Defect rate: {{ $values.B }}%
+
+                Recommended actions:
+                - Inspect machine calibration
+                - Review recent production batch
+                - Verify operator workflow
+            summary: |-
+                ❌ High defect rate detected on {{ $labels.station_name }}
+                Current defect rate: {{ $values.B }}%
+          isPaused: false
+          notification_settings:
+            receiver: grafana-default-email
+    - orgId: 1
+      name: downtime_alert
+      folder: Production KPIs
+      interval: 30s
+      rules:
+        - uid: dfm5wbyulph4we
+          title: "\U0001F6D1 EXCESSIVE DOWNTIME DETECTED"
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: afm4rznroj11ce
+              model:
+                dataset: postgres
+                editorMode: code
+                format: table
+                intervalMs: 1000
+                maxDataPoints: 43200
+                rawQuery: true
+                rawSql: SELECT station_name, MAX(downtime_minutes) AS downtime_value FROM downtime_by_station_kpi GROUP BY station_name
+                refId: A
+                sql:
+                    columns:
+                        - name: MAX
+                          parameters:
+                            - name: downtime_minutes
+                              type: functionParameter
+                          type: function
+                    groupBy:
+                        - property:
+                            type: string
+                          type: groupBy
+                    limit: 50
+                table: downtime_by_station_kpi
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 60
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          for: 30s
+          annotations:
+            description: |-
+                Excessive downtime detected on production system.
+
+                Current downtime: {{ $values.B }} minutes on {{ $labels.station_name }}
+
+                Recommended actions:
+                - Investigate machine failures
+                - Check maintenance logs
+                - Verify operator interventions
+            summary: "\U0001F6D1 Downtime reached {{ $values.B }} minutes detected on {{ $labels.station_name }}"
+          isPaused: false
+          notification_settings:
+            receiver: grafana-default-email
+    - orgId: 1
+      name: oee-alert
+      folder: Production KPIs
+      interval: 30s
+      rules:
+        - uid: dfm5w3l8v2gowb
+          title: ⚠️ OEE BELOW THRESHOLD
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: afm4rznroj11ce
+              model:
+                dataset: postgres
+                editorMode: code
+                format: table
+                intervalMs: 1000
+                maxDataPoints: 43200
+                rawQuery: true
+                rawSql: SELECT station_name, MIN(oee_pct) AS oee_value FROM oee_kpi GROUP BY station_name
+                refId: A
+                sql:
+                    columns:
+                        - name: MIN
+                          parameters:
+                            - name: oee_pct
+                              type: functionParameter
+                          type: function
+                    groupBy: []
+                    limit: 50
+                table: oee_kpi
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 60
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          for: 30s
+          annotations:
+            description: |-
+                OEE is below operational target.
+
+                Current OEE: {{ $values.B }}%
+
+                Recommended actions:
+                - Review availability losses
+                - Analyze performance losses
+                - Check quality metrics
+            summary: ⚠️ OEE dropped to {{ $values.B }}%
+          isPaused: false
+          notification_settings:
+            receiver: grafana-default-email
+    - orgId: 1
+      name: station-alerts
+      folder: Production KPIs
+      interval: 30s
+      rules:
+        - uid: ffm5vncnbk2dcd
+          title: "\U0001F6A8 Low availability detected"
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: afm4rznroj11ce
+              model:
+                dataset: postgres
+                editorMode: code
+                format: table
+                intervalMs: 1000
+                maxDataPoints: 43200
+                rawQuery: true
+                rawSql: SELECT station_name, MIN(availability_pct) AS availability_value FROM availability_kpi GROUP BY station_name
+                refId: A
+                sql:
+                    columns:
+                        - name: MIN
+                          parameters:
+                            - name: availability_pct
+                              type: functionParameter
+                          type: function
+                    groupBy:
+                        - property:
+                            type: string
+                          type: groupBy
+                    limit: 50
+                table: availability_kpi
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 85
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          for: 1m
+          annotations:
+            description: |-
+                Availability dropped below acceptable threshold.
+
+                Current availability: {{ $values.B }}%
+
+                Recommended actions:
+                - Check machine status
+                - Review downtime causes
+                - Inspect station performance
+            summary: "\U0001F6A8 Low availability detected on {{ $labels.station_name }} at {{ $values.B }}%"
+          isPaused: false
+          notification_settings:
+            receiver: grafana-default-email
+        - uid: ffm74dp2bg1s0e
+          title: Ratio critique par station
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: afm4rznroj11ce
+              model:
+                dataset: postgres
+                editorMode: code
+                format: table
+                intervalMs: 1000
+                maxDataPoints: 43200
+                rawQuery: true
+                rawSql: "SELECT\r\n  station_name,\r\n  round(\r\n    count(*) FILTER (WHERE is_critical = true)::numeric\r\n    / nullif(count(*), 0) * 100\r\n  , 2) AS critical_ratio_pct\r\nFROM public.pareto_losses_kpi\r\nWHERE production_day >= (\r\n        SELECT max(production_day) - interval '6 months'\r\n        FROM public.pareto_losses_kpi\r\n      )\r\nGROUP BY station_name\r\nORDER BY critical_ratio_pct DESC;"
+                refId: A
+                sql:
+                    columns:
+                        - parameters: []
+                          type: function
+                    groupBy:
+                        - property:
+                            type: string
+                          type: groupBy
+                    limit: 50
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 32
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          for: 30s
+          annotations:
+            summary: "\U0001F6A8 Ratio de pertes critiques élevé sur {{ $labels.station_name }}\n\nRatio critique actuel : {{ $values.B }}%\nSeuil déclencheur : 32%\n\n→ Analyser sur le dashboard Production Losses / Pareto"
+          isPaused: false
+          notification_settings:
+            receiver: grafana-default-email
+        - uid: afm7n0ryac6wwf
+          title: Goulot critique
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 7776000
+                to: 0
+              datasourceUid: afm4rznroj11ce
+              model:
+                dataset: postgres
+                editorMode: code
+                format: table
+                intervalMs: 1000
+                maxDataPoints: 43200
+                rawQuery: true
+                rawSql: "SELECT\r\n    workstep_desc AS bottleneck_step,\r\n    COUNT(*) AS workorders_count\r\nFROM public.production_routing_overview w\r\nWHERE w.is_current = true\r\n  AND $__timeFilter(w.startdate)\r\nGROUP BY workstep_desc\r\nHAVING COUNT(*) > 5;"
+                refId: A
+                sql:
+                    columns:
+                        - parameters: []
+                          type: function
+                    groupBy:
+                        - property:
+                            type: string
+                          type: groupBy
+                    limit: 50
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 100
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          for: 30s
+          annotations:
+            summary: "\U0001F6A8 Goulot critique détecté : {{ $labels.bottleneck_step }}\n\nNombre de workorders concernés : {{ $values.B }}\nSeuil critique : 100\n\n→ Analyser sur le dashboard Production Routing Overview"
+          isPaused: false
+          notification_settings:
+            receiver: grafana-default-email

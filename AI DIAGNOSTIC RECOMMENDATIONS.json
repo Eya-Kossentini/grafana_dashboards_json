@@ -1,0 +1,643 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 2,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "dashboard",
+      "includeVars": true,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": true,
+      "title": "🎯 QUALITY ANALYTICS ",
+      "tooltip": "",
+      "type": "link",
+      "url": "http://localhost:3000/d/adsm2qn/quality-analytics-dashboard?orgId=1&from=now-6M&to=now&timezone=browser&var-station=$__all"
+    },
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": true,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": true,
+      "title": "⚙️ Availability & Downtime",
+      "tooltip": "",
+      "type": "link",
+      "url": "http://localhost:3000/d/adhntwm/availability-and-downtime-dashboard?orgId=1&from=now-6M&to=now&timezone=browser&var-station=FRA-PP-L01-03"
+    },
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": true,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": true,
+      "title": "📊 Industrial Performance Overview",
+      "tooltip": "",
+      "type": "link",
+      "url": "http://localhost:3000/d/adqztjb/industrial-performance-and-reliability-overview?orgId=1&from=now-6M&to=now&timezone=browser&var-station=$__all"
+    },
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": true,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": true,
+      "title": "📈 Performance Analytics",
+      "tooltip": "",
+      "type": "link",
+      "url": "http://localhost:3000/d/ad7pzx5/performance-analytics-dashboard?orgId=1&from=now-6M&to=now&timezone=browser&var-station=FRA-PP-L01-03"
+    }
+  ],
+  "panels": [
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 11,
+        "x": 0,
+        "y": 0
+      },
+      "id": 5,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "Summary: 🚨 Scrap rate detected at {{$values.B}}% (threshold: 5%)\nDescription: \nThe scrap rate has exceeded 5% on at least one station/day in the last 7 days.\nMaximum scrap rate detected: {{$values.B}}%.\n\nAction required:\n- Review last batch quality\n- Check station calibration\n- Audit operator workflow",
+        "mode": "markdown"
+      },
+      "pluginVersion": "12.3.2",
+      "title": "",
+      "type": "text"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 9,
+        "x": 11,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "## 🧠 AI Diagnostic — Real-Time Analysis\n\n> **🚨 Station detected:** `${critical_station}`\n>\n> **⚠️ Criticality:** **${criticality}**\n\n---\n\n### 📊 Key findings\n\n- **Top failure group:** ${main_failure_group} (${main_failure_pct}% of defects)\n- **Top loss type:** ${main_loss} (${main_loss_pct}% of downtime)\n\n---\n\n### 💡 Recommended action\n\n${recommended_action}\n\n---\n\n*🤖 AI heuristic analysis based on production telemetry. Last refresh: ${__to:date}*",
+        "mode": "markdown"
+      },
+      "pluginVersion": "12.3.2",
+      "title": "",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "afm4rznroj11ce"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Critical"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "High"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Medium"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Low"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 4,
+        "x": 20,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "sort": "desc",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "dataset": "postgres",
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  nb_critical AS \"Critical\",\r\n  nb_high AS \"High\",\r\n  nb_medium AS \"Medium\",\r\n  nb_low AS \"Low\"\r\nFROM public.v_ai_diagnostic_snapshot;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "📈 Criticality Distribution",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "afm4rznroj11ce"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 11,
+        "x": 0,
+        "y": 6
+      },
+      "id": 3,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "dataset": "postgres",
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \r\n    critical_station AS \"Station critique\",\r\n    criticality AS \"Status\",\r\n    CONCAT(main_loss, ' (', main_loss_pct, '%)') AS \"Cause #1 arret\",\r\n    CONCAT(main_failure_group, ' (', main_failure_pct, '%)') AS \"Cause #1 defauts\"\r\nFROM public.v_ai_diagnostic_snapshot;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "🚨 AI Critical Station Detection",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "afm4rznroj11ce"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Status"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "Critical": {
+                        "color": "red",
+                        "index": 0
+                      },
+                      "High": {
+                        "color": "orange",
+                        "index": 1
+                      },
+                      "Low": {
+                        "color": "green",
+                        "index": 3
+                      },
+                      "Medium": {
+                        "color": "yellow",
+                        "index": 2
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              },
+              {
+                "id": "custom.width",
+                "value": 141
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Top defect"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 167
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "% defects"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 148
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hours lost"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 190
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "% downtime"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 164
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Station"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 196
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Top loss"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 215
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 10
+      },
+      "id": 2,
+      "options": {
+        "cellHeight": "sm",
+        "enablePagination": false,
+        "showHeader": true
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "dataset": "postgres",
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \r\n    station_name AS \"Station\",\r\n    criticality_level AS \"Status\",\r\n    top_failure_group AS \"Top defect\",\r\n    CONCAT(top_failure_pct, '%') AS \"% defects\",\r\n    top_loss_type AS \"Top loss\",\r\n    CONCAT(ROUND(top_loss_hours, 1), 'h') AS \"Hours lost\",\r\n    CONCAT(top_loss_pct, '%') AS \"% downtime\",\r\n    recommended_action AS \"💡 Recommended action\"\r\nFROM public.failure_loss_diagnostic_kpi\r\nORDER BY \r\n    CASE criticality_level\r\n        WHEN 'Critical' THEN 1\r\n        WHEN 'High' THEN 2\r\n        WHEN 'Medium' THEN 3\r\n        ELSE 4\r\n    END,\r\n    top_loss_pct DESC;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "📋 Stations Status Overview",
+      "transparent": true,
+      "type": "table"
+    }
+  ],
+  "preload": false,
+  "schemaVersion": 42,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "🚨 URGENT: Audit flux de production. Les temps d'attente representent 25.93% des arrets. Action: revoir ordonnancement, equilibrage charge operateurs, et flux matiere amont.",
+          "value": "🚨 URGENT: Audit flux de production. Les temps d'attente representent 25.93% des arrets. Action: revoir ordonnancement, equilibrage charge operateurs, et flux matiere amont."
+        },
+        "definition": "SELECT recommended_action FROM public.v_ai_diagnostic_snapshot;",
+        "name": "recommended_action",
+        "options": [],
+        "query": "SELECT recommended_action FROM public.v_ai_diagnostic_snapshot;",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "Critical",
+          "value": "Critical"
+        },
+        "definition": "\tSELECT criticality FROM public.v_ai_diagnostic_snapshot;",
+        "name": "criticality",
+        "options": [],
+        "query": "\tSELECT criticality FROM public.v_ai_diagnostic_snapshot;",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "Solder Fillet",
+          "value": "Solder Fillet"
+        },
+        "definition": "SELECT main_failure_group FROM public.v_ai_diagnostic_snapshot;",
+        "name": "main_failure_group",
+        "options": [],
+        "query": "SELECT main_failure_group FROM public.v_ai_diagnostic_snapshot;",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "25.93",
+          "value": "25.93"
+        },
+        "definition": "\tSELECT main_loss_pct FROM public.v_ai_diagnostic_snapshot;",
+        "name": "main_loss_pct",
+        "options": [],
+        "query": "\tSELECT main_loss_pct FROM public.v_ai_diagnostic_snapshot;",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "Waiting",
+          "value": "Waiting"
+        },
+        "definition": "\tSELECT main_loss FROM public.v_ai_diagnostic_snapshot;",
+        "name": "main_loss",
+        "options": [],
+        "query": "\tSELECT main_loss FROM public.v_ai_diagnostic_snapshot;",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "SF-SPI-L01-01",
+          "value": "SF-SPI-L01-01"
+        },
+        "definition": "SELECT critical_station FROM public.v_ai_diagnostic_snapshot;",
+        "name": "critical_station",
+        "options": [],
+        "query": "SELECT critical_station FROM public.v_ai_diagnostic_snapshot;",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "8.32",
+          "value": "8.32"
+        },
+        "definition": "\tSELECT main_failure_pct FROM public.v_ai_diagnostic_snapshot;",
+        "name": "main_failure_pct",
+        "options": [],
+        "query": "\tSELECT main_failure_pct FROM public.v_ai_diagnostic_snapshot;",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "1m"
+    ]
+  },
+  "timezone": "browser",
+  "title": "🧠 AI Diagnostic & Recommendations",
+  "uid": "adbz84z",
+  "version": 15
+}
