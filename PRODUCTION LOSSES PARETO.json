@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 13,
+  "id": 0,
   "links": [
     {
       "asDropdown": false,
@@ -68,6 +68,8 @@
           "color": {
             "mode": "thresholds"
           },
+          "decimals": 2,
+          "fieldMinMax": false,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -75,37 +77,84 @@
               {
                 "color": "green",
                 "value": 0
-              },
+              }
+            ]
+          },
+          "unit": "h"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "max_loss_hours"
+            },
+            "properties": [
               {
-                "color": "red",
-                "value": 80
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "min_loss_hours"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "total_loss_hours"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
               }
             ]
           }
-        },
-        "overrides": []
+        ]
       },
       "gridPos": {
-        "h": 6,
-        "w": 3,
+        "h": 5,
+        "w": 14,
         "x": 0,
         "y": 0
       },
       "id": 1,
       "options": {
-        "colorMode": "value",
+        "colorMode": "background",
         "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
+        "justifyMode": "center",
+        "orientation": "vertical",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "",
+          "fields": "/.*/",
           "values": false
         },
         "showPercentChange": false,
+        "text": {
+          "titleSize": 40,
+          "valueSize": 30
+        },
         "textMode": "auto",
         "wideLayout": true
       },
@@ -116,7 +165,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT ROUND(SUM(loss_hours)::numeric, 2) AS total_loss_hours\r\nFROM public.pareto_losses_kpi\r\nWHERE $__timeFilter(production_day)\r\n  AND loss_type IN (${loss_type:sqlstring})\r\n  AND station_name LIKE (${station:sqlstring});",
+          "rawSql": "SELECT \r\n  ROUND(SUM(loss_hours)::numeric, 2) AS total_loss_hours,\r\n  ROUND(MIN(loss_hours)::numeric, 2) AS min_loss_hours,\r\n  ROUND(MAX(loss_hours)::numeric, 2) AS max_loss_hours\r\nFROM public.pareto_losses_kpi\r\nWHERE loss_type IN (${loss_type:sqlstring})\r\n  AND station_name IN (\r\n      SELECT s.name FROM staging.stations s\r\n      JOIN staging.line_stations ls ON ls.station_id = s.id\r\n      JOIN staging.lines l ON l.id = ls.line_id\r\n      WHERE l.name IN (${line:sqlstring})\r\n    )\r\n  AND $__timeFilter(production_day);",
           "refId": "A",
           "sql": {
             "columns": [
@@ -138,88 +187,6 @@
         }
       ],
       "title": "Total loss hours",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "afm4rznroj11ce"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 4,
-        "x": 3,
-        "y": 0
-      },
-      "id": 2,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.3.2",
-      "targets": [
-        {
-          "dataset": "postgres",
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT COUNT(*) AS nb_critiques\r\nFROM public.pareto_losses_kpi\r\nWHERE is_critical = true\r\n  AND $__timeFilter(production_day)\r\n  AND loss_type IN (${loss_type:sqlstring})\r\n  AND station_name LIKE (${station:sqlstring});",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "Nb événements critiques",
       "type": "stat"
     },
     {
@@ -321,9 +288,9 @@
         ]
       },
       "gridPos": {
-        "h": 6,
-        "w": 9,
-        "x": 7,
+        "h": 5,
+        "w": 10,
+        "x": 14,
         "y": 0
       },
       "id": 7,
@@ -344,7 +311,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "WITH agg AS (\r\n  SELECT loss_type, sum(loss_hours) AS h\r\n  FROM public.pareto_losses_kpi\r\n  WHERE $__timeFilter(production_day)\r\n    AND loss_type IN (${loss_type:sqlstring})\r\n    AND station_name LIKE (${station:sqlstring})\r\n  GROUP BY loss_type\r\n),\r\ncalc AS (\r\n  SELECT loss_type, h,\r\n    row_number() OVER (ORDER BY h DESC) AS rang,\r\n    sum(h) OVER (ORDER BY h DESC)        AS cum,\r\n    sum(h) OVER ()                       AS total\r\n  FROM agg\r\n)\r\nSELECT rang, loss_type,\r\n  round(h,2)                               AS heures,\r\n  round(100.0*h/nullif(total,0),1)         AS pct,\r\n  round(100.0*cum/nullif(total,0),1)       AS cumul_pct,\r\n  CASE WHEN 100.0*cum/nullif(total,0) <= 80\r\n       THEN 'Vital few (80%)' ELSE 'Useful many' END AS classe_pareto\r\nFROM calc ORDER BY rang;",
+          "rawSql": "WITH agg AS (\r\n  SELECT loss_type, sum(loss_hours) AS h\r\n  FROM public.pareto_losses_kpi\r\n  WHERE $__timeFilter(production_day)\r\n    AND loss_type IN (${loss_type:sqlstring})\r\n    AND  station_name IN (\r\n        SELECT s.name FROM staging.stations s\r\n        JOIN staging.line_stations ls ON ls.station_id = s.id\r\n        JOIN staging.lines l ON l.id = ls.line_id\r\n        WHERE l.name IN (${line:sqlstring})\r\n      )\r\n  GROUP BY loss_type\r\n),\r\ncalc AS (\r\n  SELECT loss_type, h,\r\n    row_number() OVER (ORDER BY h DESC) AS rang,\r\n    sum(h) OVER (ORDER BY h DESC)        AS cum,\r\n    sum(h) OVER ()                       AS total\r\n  FROM agg\r\n)\r\nSELECT rang, loss_type,\r\n  round(h,2)                               AS heures,\r\n  round(100.0*h/nullif(total,0),1)         AS pct,\r\n  round(100.0*cum/nullif(total,0),1)       AS cumul_pct,\r\n  CASE WHEN 100.0*cum/nullif(total,0) <= 80\r\n       THEN 'Vital few (80%)' ELSE 'Useful many' END AS classe_pareto\r\nFROM calc ORDER BY rang;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -397,9 +364,118 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 8,
-        "x": 16,
-        "y": 0
+        "w": 4,
+        "x": 0,
+        "y": 5
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "dataset": "postgres",
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COUNT(*) AS nb_critiques\r\nFROM public.pareto_losses_kpi\r\nWHERE is_critical = true\r\n  AND $__timeFilter(production_day)\r\n  AND loss_type IN (${loss_type:sqlstring})\r\n  AND station_name IN (\r\n        SELECT s.name FROM staging.stations s\r\n        JOIN staging.line_stations ls ON ls.station_id = s.id\r\n        JOIN staging.lines l ON l.id = ls.line_id\r\n        WHERE l.name IN (${line:sqlstring})\r\n      );",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Nb événements critiques",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "afm4rznroj11ce"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "max_ratio_pct"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "critical_rows"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 14,
+        "x": 5,
+        "y": 5
       },
       "id": 18,
       "options": {
@@ -426,7 +502,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT station_name,\r\n       count(*) AS total_rows,\r\n       count(*) FILTER (WHERE is_critical = true) AS critical_rows,\r\n       round(count(*) FILTER (WHERE is_critical = true)::numeric\r\n             / nullif(count(*),0) * 100, 2) AS critical_ratio_pct\r\nFROM public.pareto_losses_kpi\r\nWHERE $__timeFilter(production_day)\r\n  AND loss_type IN (${loss_type:sqlstring})\r\n  AND station_name LIKE (${station:sqlstring})\r\nGROUP BY station_name\r\nORDER BY critical_ratio_pct DESC;",
+          "rawSql": "WITH ratios AS (\r\n  SELECT station_name,\r\n         count(*) AS total_rows,\r\n         count(*) FILTER (WHERE is_critical = true) AS critical_rows,\r\n         round(count(*) FILTER (WHERE is_critical = true)::numeric\r\n           / nullif(count(*),0) * 100, 2) AS critical_ratio_pct\r\n  FROM public.pareto_losses_kpi\r\n  WHERE $__timeFilter(production_day)\r\n  AND loss_type IN (${loss_type:sqlstring})\r\n  AND station_name IN (\r\n    SELECT s.name FROM staging.stations s\r\n    JOIN staging.line_stations ls ON ls.station_id = s.id\r\n    JOIN staging.lines l ON l.id = ls.line_id\r\n    WHERE l.name IN (${line:sqlstring})\r\n  )\r\n  GROUP BY station_name\r\n)\r\nSELECT \r\n  station_name,\r\n  total_rows,\r\n  critical_rows,\r\n  MIN(critical_ratio_pct) OVER () AS min_ratio_pct,\r\n  MAX(critical_ratio_pct) OVER () AS max_ratio_pct\r\nFROM ratios\r\nORDER BY critical_ratio_pct DESC;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -509,13 +585,116 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "max_monthly"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 5
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    10,
+                    10
+                  ],
+                  "fill": "dash"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "min_monthly"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 5
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "palette-classic"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    10,
+                    10
+                  ],
+                  "fill": "dash"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "monthly_loss_hours"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "mom_variation"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 10,
         "w": 12,
         "x": 0,
-        "y": 6
+        "y": 11
       },
       "id": 6,
       "options": {
@@ -538,7 +717,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "WITH monthly AS (\r\n  SELECT date_trunc('month', production_day) AS time,\r\n         sum(loss_hours) AS monthly_loss_hours\r\n  FROM public.pareto_losses_kpi\r\n  WHERE $__timeFilter(production_day)\r\n  AND loss_type IN (${loss_type:sqlstring})\r\n  AND station_name LIKE (${station:sqlstring})\r\n  GROUP BY 1\r\n),\r\nvariation AS (\r\n  SELECT time, monthly_loss_hours,\r\n         monthly_loss_hours - lag(monthly_loss_hours) OVER (ORDER BY time) AS mom_variation\r\n  FROM monthly\r\n)\r\nSELECT time,\r\n       round(monthly_loss_hours::numeric,2) AS monthly_loss_hours,\r\n       round(mom_variation::numeric,2)      AS mom_variation\r\nFROM variation ORDER BY time;",
+          "rawSql": "WITH monthly AS (\r\n  SELECT date_trunc('month', production_day) AS time,\r\n         sum(loss_hours) AS monthly_loss_hours\r\n  FROM public.pareto_losses_kpi\r\n  WHERE $__timeFilter(production_day)\r\n  AND loss_type IN (${loss_type:sqlstring})\r\n  AND station_name IN (\r\n        SELECT s.name FROM staging.stations s\r\n        JOIN staging.line_stations ls ON ls.station_id = s.id\r\n        JOIN staging.lines l ON l.id = ls.line_id\r\n        WHERE l.name IN (${line:sqlstring})\r\n      )\r\n  GROUP BY 1\r\n),\r\nvariation AS (\r\n  SELECT time, monthly_loss_hours,\r\n         monthly_loss_hours - lag(monthly_loss_hours) OVER (ORDER BY time) AS mom_variation\r\n  FROM monthly\r\n)\r\nSELECT time,\r\n       round(monthly_loss_hours::numeric, 2) AS monthly_loss_hours,\r\n       round(mom_variation::numeric, 2) AS mom_variation,\r\n       MIN(monthly_loss_hours) OVER () AS min_monthly,\r\n       MAX(monthly_loss_hours) OVER () AS max_monthly\r\nFROM variation\r\nORDER BY time;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -570,7 +749,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
           },
           "custom": {
             "axisBorderShow": false,
@@ -600,6 +779,10 @@
               {
                 "color": "green",
                 "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           }
@@ -610,7 +793,7 @@
         "h": 10,
         "w": 12,
         "x": 12,
-        "y": 6
+        "y": 11
       },
       "id": 5,
       "options": {
@@ -675,10 +858,10 @@
       {
         "current": {
           "text": [
-            "Waiting"
+            "All"
           ],
           "value": [
-            "Waiting"
+            "$__all"
           ]
         },
         "definition": "select distinct loss_type from public.pareto_losses_kpi;",
@@ -692,13 +875,32 @@
         "type": "query"
       },
       {
+        "current": {
+          "text": [
+            "GEN-LINE-116"
+          ],
+          "value": [
+            "GEN-LINE-116"
+          ]
+        },
+        "definition": "SELECT name FROM staging.lines ORDER BY name",
+        "includeAll": true,
+        "multi": true,
+        "name": "line",
+        "options": [],
+        "query": "SELECT name FROM staging.lines ORDER BY name",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
         "allValue": "%",
         "current": {
           "text": [
-            "HDR-MLD-L01-01"
+            "All"
           ],
           "value": [
-            "HDR-MLD-L01-01"
+            "$__all"
           ]
         },
         "definition": "SELECT DISTINCT station_name FROM public.pareto_losses_kpi ",
@@ -714,12 +916,12 @@
     ]
   },
   "time": {
-    "from": "now-6M",
-    "to": "now"
+    "from": "2025-09-05T18:55:05.365Z",
+    "to": "2026-09-04T16:55:05.365Z"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "📉 Production Losses / Pareto",
   "uid": "adlplfk",
-  "version": 59
+  "version": 74
 }
