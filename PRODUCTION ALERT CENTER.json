@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 10,
+  "id": 0,
   "links": [
     {
       "asDropdown": false,
@@ -90,7 +90,8 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "fixedColor": "#e6eef7",
+            "mode": "fixed"
           },
           "custom": {
             "align": "left",
@@ -186,7 +187,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\r\n    d.station_name,\r\n\r\n    MAX(d.downtime_minutes) AS downtime_minutes,\r\n    MAX(q.defect_rate_pct) AS defect_rate_pct,\r\n    AVG(o.oee_pct) AS oee_pct,\r\n\r\n    CASE\r\n        WHEN MAX(d.downtime_minutes) > 120 THEN '🔴 Critical Downtime'\r\n        WHEN MAX(q.defect_rate_pct) > 8 THEN '🟠 High Defect Rate'\r\n        WHEN AVG(o.oee_pct) < 60 THEN '🟡 Low OEE'\r\n        ELSE '🟢 Normal'\r\n    END AS detected_issue,\r\n\r\n    CASE\r\n        WHEN MAX(d.downtime_minutes) > 120 THEN 'Schedule urgent maintenance inspection'\r\n        WHEN MAX(q.defect_rate_pct) > 8 THEN 'Inspect calibration and production quality'\r\n        WHEN AVG(o.oee_pct) < 60 THEN 'Review production flow efficiency'\r\n        ELSE 'No action required'\r\n    END AS ai_recommendation\r\n\r\nFROM public.downtime_by_station_kpi d\r\n\r\nLEFT JOIN public.defect_rate_kpi q\r\n    ON d.station_name = q.station_name\r\n\r\nLEFT JOIN public.oee_kpi o\r\n    ON d.station_name = o.station_name\r\n\r\nWHERE d.station_name = '${station}'\r\n\r\nGROUP BY d.station_name;",
+          "rawSql": "SELECT\r\n    d.station_name,\r\n\r\n    MAX(d.downtime_minutes) AS downtime_minutes,\r\n    MAX(q.defect_rate_pct) AS defect_rate_pct,\r\n    AVG(o.oee_pct) AS oee_pct,\r\n\r\n    CASE\r\n        WHEN MAX(d.downtime_minutes) > 120 THEN '🔴 Critical Downtime'\r\n        WHEN MAX(q.defect_rate_pct) > 8 THEN '🟠 High Defect Rate'\r\n        WHEN AVG(o.oee_pct) < 60 THEN '🟡 Low OEE'\r\n        ELSE '🟢 Normal'\r\n    END AS detected_issue,\r\n\r\n    CASE\r\n        WHEN MAX(d.downtime_minutes) > 120 THEN 'Schedule urgent maintenance inspection'\r\n        WHEN MAX(q.defect_rate_pct) > 8 THEN 'Inspect calibration and production quality'\r\n        WHEN AVG(o.oee_pct) < 60 THEN 'Review production flow efficiency'\r\n        ELSE 'No action required'\r\n    END AS ai_recommendation\r\n\r\nFROM public.downtime_by_station_kpi d\r\n\r\nLEFT JOIN public.defect_rate_kpi q\r\n    ON d.station_name = q.station_name\r\n\r\nLEFT JOIN public.oee_kpi o\r\n    ON d.station_name = o.station_name\r\n\r\nWHERE d.station_name IN (\r\n  SELECT s.name FROM staging.stations s\r\n  JOIN staging.line_stations ls ON ls.station_id = s.id\r\n  JOIN staging.lines l ON l.id = ls.line_id\r\n  WHERE l.name IN (${line:sqlstring})\r\n)\r\nAND (\r\n  '${station}' = '$__all'\r\n  OR d.station_name IN (${station:sqlstring})\r\n)\r\n\r\nGROUP BY d.station_name;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -272,7 +273,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT COUNT(*)\r\nFROM public.downtime_by_station_kpi\r\nWHERE downtime_minutes > 60\r\nAND station_name = '${station}';",
+          "rawSql": "SELECT COUNT(*)\r\nFROM public.downtime_by_station_kpi\r\nWHERE downtime_minutes > 60\r\nAND station_name IN (\r\n  SELECT s.name FROM staging.stations s\r\n  JOIN staging.line_stations ls ON ls.station_id = s.id\r\n  JOIN staging.lines l ON l.id = ls.line_id\r\n  WHERE l.name IN (${line:sqlstring})\r\n);",
           "refId": "A",
           "sql": {
             "columns": [
@@ -380,7 +381,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\r\n    station_name,\r\n    COUNT(*) AS failures\r\nFROM public.failure_loss_diagnostic_kpi WHERE station_name = '${station}'\r\nGROUP BY station_name\r\nORDER BY failures DESC;",
+          "rawSql": "SELECT\r\n    station_name,\r\n    COUNT(*) AS failures\r\nFROM public.failure_loss_diagnostic_kpi \r\nWHERE station_name IN (\r\n  SELECT s.name FROM staging.stations s\r\n  JOIN staging.line_stations ls ON ls.station_id = s.id\r\n  JOIN staging.lines l ON l.id = ls.line_id\r\n  WHERE l.name IN (${line:sqlstring})\r\n)\r\nGROUP BY station_name\r\nORDER BY failures DESC;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -547,7 +548,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\r\n    station_name,\r\n    defect_rate_pct,\r\n    production_day  \r\nFROM public.defect_rate_kpi \r\nWHERE defect_rate_pct > 5 and station_name = '${station}'\r\nORDER BY defect_rate_pct DESC;",
+          "rawSql": "SELECT\r\n    station_name,\r\n    defect_rate_pct,\r\n    production_day  \r\nFROM public.defect_rate_kpi \r\nWHERE defect_rate_pct > 5 \r\nAND station_name IN (\r\n  SELECT s.name FROM staging.stations s\r\n  JOIN staging.line_stations ls ON ls.station_id = s.id\r\n  JOIN staging.lines l ON l.id = ls.line_id\r\n  WHERE l.name IN (${line:sqlstring})\r\n)\r\nORDER BY defect_rate_pct DESC;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -694,7 +695,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\r\n    production_day,\r\n    AVG(oee_pct) AS avg_oee \r\nFROM public.oee_kpi WHERE station_name = '${station}'\r\nGROUP BY production_day\r\nORDER BY production_day;",
+          "rawSql": "SELECT\r\n    production_day,\r\n    AVG(oee_pct) AS avg_oee \r\nFROM public.oee_kpi \r\nWHERE station_name IN (\r\n  SELECT s.name FROM staging.stations s\r\n  JOIN staging.line_stations ls ON ls.station_id = s.id\r\n  JOIN staging.lines l ON l.id = ls.line_id\r\n  WHERE l.name IN (${line:sqlstring})\r\n)\r\nGROUP BY production_day\r\nORDER BY production_day;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -726,8 +727,27 @@
     "list": [
       {
         "current": {
-          "text": "HDR-MLD-L01-02",
-          "value": "HDR-MLD-L01-02"
+          "text": [
+            "GEN-LINE-119"
+          ],
+          "value": [
+            "GEN-LINE-119"
+          ]
+        },
+        "definition": "SELECT name FROM staging.lines ORDER BY name",
+        "includeAll": true,
+        "multi": true,
+        "name": "line",
+        "options": [],
+        "query": "SELECT name FROM staging.lines ORDER BY name",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "SF-SPI-L01-01",
+          "value": "SF-SPI-L01-01"
         },
         "definition": "select distinct station_name from public.downtime_by_station_kpi;",
         "includeAll": true,
@@ -741,12 +761,12 @@
     ]
   },
   "time": {
-    "from": "now-90d",
-    "to": "now"
+    "from": "2025-11-13T00:00:00.000Z",
+    "to": "2026-05-11T00:00:00.000Z"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "🚨 Production Alert Center ",
   "uid": "ad66rt2",
-  "version": 30
+  "version": 37
 }
