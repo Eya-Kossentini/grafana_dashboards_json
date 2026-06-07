@@ -87,102 +87,20 @@
         "type": "grafana-postgresql-datasource",
         "uid": "afm4rznroj11ce"
       },
-      "description": "Quality rate trend over time.",
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "fixedColor": "#1e3a8a",
+            "mode": "fixed"
           },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "smooth",
-            "lineStyle": {
-              "fill": "solid"
-            },
-            "lineWidth": 5,
-            "pointSize": 4,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "showValues": false,
-            "spanNulls": true,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [
-            {
-              "options": {
-                "from": 95,
-                "result": {
-                  "color": "green",
-                  "index": 0
-                }
-              },
-              "type": "range"
-            },
-            {
-              "options": {
-                "from": 90,
-                "result": {
-                  "color": "orange",
-                  "index": 1
-                },
-                "to": 95
-              },
-              "type": "range"
-            },
-            {
-              "options": {
-                "result": {
-                  "color": "red",
-                  "index": 2
-                },
-                "to": 90
-              },
-              "type": "range"
-            }
-          ],
-          "max": 100,
-          "min": 80,
+          "fieldMinMax": true,
+          "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "green",
                 "value": 0
-              },
-              {
-                "color": "red",
-                "value": 0
-              },
-              {
-                "color": "yellow",
-                "value": 90
-              },
-              {
-                "color": "green",
-                "value": 95
               }
             ]
           },
@@ -191,340 +109,17 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
-        "w": 12,
+        "h": 5,
+        "w": 14,
         "x": 0,
         "y": 0
       },
-      "id": 10,
+      "id": 11,
       "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.3.2",
-      "targets": [
-        {
-          "dataset": "postgres",
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT \r\n    production_day AS \"time\",\r\n    100.0 - defect_rate_pct AS \"Quality Rate (%)\",\r\n    85 AS \"Target\",\r\n    95 AS \"World-class\"\r\nFROM public.defect_rate_kpi\r\nWHERE station_name IN (${station:sqlstring})\r\n  AND $__timeFilter(production_day)\r\nORDER BY production_day;",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "Quality Trend",
-      "transparent": true,
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "afm4rznroj11ce"
-      },
-      "description": "Displays the monthly evolution of scrap generation to monitor long-term quality performance.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "fillOpacity": 80,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [
-            {
-              "options": {
-                "from": 0,
-                "result": {
-                  "color": "green",
-                  "index": 0
-                },
-                "to": 2
-              },
-              "type": "range"
-            },
-            {
-              "options": {
-                "from": 2,
-                "result": {
-                  "color": "yellow",
-                  "index": 1
-                },
-                "to": 5
-              },
-              "type": "range"
-            },
-            {
-              "options": {
-                "from": 5,
-                "result": {
-                  "color": "red",
-                  "index": 2
-                },
-                "to": 100
-              },
-              "type": "range"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "yellow",
-                "value": 2
-              },
-              {
-                "color": "red",
-                "value": 5
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 11,
-        "x": 13,
-        "y": 0
-      },
-      "id": 4,
-      "options": {
-        "barRadius": 0,
-        "barWidth": 0.97,
-        "colorByField": "Monthly Scrap Rate",
-        "fullHighlight": false,
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "orientation": "auto",
-        "showValue": "always",
-        "stacking": "none",
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        },
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
-      },
-      "pluginVersion": "12.3.2",
-      "targets": [
-        {
-          "dataset": "postgres",
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT\r\n    date_trunc('month', production_day::timestamp) AS \"time\",\r\n    AVG(scrap_rate_pct) AS scrap_rate\r\nFROM public.scrap_by_day_kpi\r\nWHERE station_name IN ($station)\r\n  AND $__timeFilter(production_day::timestamp)\r\nGROUP BY 1\r\nORDER BY 1;",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        },
-        {
-          "conditions": [
-            {
-              "evaluator": {
-                "params": [
-                  3,
-                  0
-                ],
-                "type": "gt"
-              },
-              "operator": {
-                "type": "and"
-              },
-              "query": {
-                "params": [
-                  "A"
-                ]
-              },
-              "reducer": {
-                "params": [],
-                "type": "last"
-              },
-              "type": "query"
-            }
-          ],
-          "datasource": {
-            "name": "Expression",
-            "type": "__expr__",
-            "uid": "__expr__"
-          },
-          "hide": false,
-          "refId": "B",
-          "type": "classic_conditions"
-        }
-      ],
-      "title": "Monthly Scrap Rate Trend",
-      "type": "barchart"
-    },
-    {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "afm4rznroj11ce"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [
-            {
-              "options": {
-                "from": 0,
-                "result": {
-                  "color": "green",
-                  "index": 0,
-                  "text": "Excellent"
-                },
-                "to": 3
-              },
-              "type": "range"
-            },
-            {
-              "options": {
-                "from": 3,
-                "result": {
-                  "color": "yellow",
-                  "index": 1,
-                  "text": "Acceptable"
-                },
-                "to": 5
-              },
-              "type": "range"
-            },
-            {
-              "options": {
-                "from": 5,
-                "result": {
-                  "color": "orange",
-                  "index": 2,
-                  "text": "Under Monitoring"
-                },
-                "to": 10
-              },
-              "type": "range"
-            },
-            {
-              "options": {
-                "from": 10,
-                "result": {
-                  "index": 3,
-                  "text": "Critical"
-                },
-                "to": 100
-              },
-              "type": "range"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "yellow",
-                "value": 3
-              },
-              {
-                "color": "orange",
-                "value": 5
-              },
-              {
-                "color": "red",
-                "value": 10
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 3,
-        "x": 0,
-        "y": 7
-      },
-      "id": 7,
-      "options": {
-        "colorMode": "value",
+        "colorMode": "background",
         "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
+        "justifyMode": "center",
+        "orientation": "vertical",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
@@ -534,8 +129,12 @@
           "values": false
         },
         "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
+        "text": {
+          "titleSize": 60,
+          "valueSize": 50
+        },
+        "textMode": "value_and_name",
+        "wideLayout": false
       },
       "pluginVersion": "12.3.2",
       "targets": [
@@ -544,7 +143,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \r\n  AVG(defect_rate_pct) AS \"Defect Rate (moyenne)\"\r\nFROM public.defect_rate_kpi\r\nWHERE station_name IN (${station:sqlstring})\r\n  AND $__timeFilter(production_day);",
+          "rawSql": "SELECT\r\n    MIN(defect_rate_pct) AS \"Min\",\r\n    ROUND(AVG(defect_rate_pct),2) AS \"Moyen\",\r\n    MAX(defect_rate_pct) AS \"Max\"\r\nFROM public.defect_rate_kpi\r\nWHERE station_name IN (\r\n  SELECT s.name FROM staging.stations s\r\n  JOIN staging.line_stations ls ON ls.station_id = s.id\r\n  JOIN staging.lines l ON l.id = ls.line_id\r\n  WHERE l.name IN (${line:sqlstring})\r\n)\r\n  AND $__timeFilter(production_day);",
           "refId": "A",
           "sql": {
             "columns": [
@@ -565,8 +164,221 @@
           }
         }
       ],
-      "title": "Quality Assessment",
+      "title": "Defect Rate ",
+      "transparent": true,
       "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "afm4rznroj11ce"
+      },
+      "description": "MTBF (Mean Time Between Failures): average time between two failures (the higher, the better).\n\nMTTR (Mean Time To Repair): average repair time after a failure (the lower, the better).\n\nIndustrial target: MTBF > 100h, MTTR < 4h.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "green",
+                "value": 100
+              }
+            ]
+          },
+          "unit": "h"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 14,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "displayMode": "gradient",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "dataset": "postgres",
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n    m.station_name,\r\n    m.mtbf_hours AS \"Mean Time Between Failures\",\r\n    t.mttr_hours AS \"Mean Time To Repair\"\r\nFROM public.mtbf_kpi m\r\nJOIN public.mttr_kpi t ON m.station_id = t.station_id\r\nWHERE m.station_name IS NOT NULL\r\n    AND m.mtbf_hours IS NOT NULL\r\nORDER BY m.mtbf_hours ASC",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "MTBF / MTTR",
+      "transparent": true,
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "afm4rznroj11ce"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [
+            {
+              "options": {
+                "Fail": {
+                  "color": "yellow",
+                  "index": 1,
+                  "text": "Fail"
+                },
+                "Pass": {
+                  "color": "green",
+                  "index": 0,
+                  "text": "Pass"
+                },
+                "Scrap": {
+                  "color": "red",
+                  "index": 2,
+                  "text": "Scrap"
+                }
+              },
+              "type": "value"
+            }
+          ]
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Pass"
+            },
+            "properties": []
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 5,
+        "x": 0,
+        "y": 5
+      },
+      "id": 9,
+      "options": {
+        "displayLabels": [],
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "sort": "desc",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "dataset": "postgres",
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \r\n    DATE_TRUNC('week', production_day)::date AS \"time\",\r\n    SUM(good_count)  AS \"Pass\",\r\n    SUM(fail_count)  AS \"Fail\",\r\n    SUM(scrap_count) AS \"Scrap\"\r\nFROM public.defect_rate_kpi\r\nWHERE station_name IN (\r\n    SELECT s.name FROM staging.stations s\r\n    JOIN staging.line_stations ls ON ls.station_id = s.id\r\n    JOIN staging.lines l ON l.id = ls.line_id\r\n    WHERE l.name IN (${line:sqlstring})\r\n  )\r\n  AND $__timeFilter(production_day)\r\nGROUP BY DATE_TRUNC('week', production_day)\r\nORDER BY DATE_TRUNC('week', production_day);",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Quality Distribution",
+      "type": "piechart"
     },
     {
       "datasource": {
@@ -666,9 +478,9 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 3,
-        "x": 3,
-        "y": 7
+        "w": 5,
+        "x": 5,
+        "y": 5
       },
       "id": 1,
       "options": {
@@ -699,7 +511,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\r\n(\r\n    SELECT ROUND(AVG(defect_rate_pct),1)\r\n    FROM public.defect_rate_kpi\r\n    WHERE station_name IN (${station:sqlstring})\r\n      AND $__timeFilter(production_day)\r\n) AS \"Defect Rate\",\r\n\r\n(\r\n    SELECT ROUND(AVG(NULLIF(quality_pct,0)),1) as \"Quality Rate\"\r\n    FROM public.quality_kpi\r\n    WHERE station_name IN (${station:sqlstring})\r\n      AND $__timeFilter(production_day)\r\n) AS \"Quality Rate\";",
+          "rawSql": "SELECT\r\n\r\n(\r\n    SELECT ROUND(AVG(NULLIF(quality_pct,0)),1) as \"Quality Rate\"\r\n    FROM public.quality_kpi\r\n    WHERE station_name IN (\r\n      SELECT s.name FROM staging.stations s\r\n      JOIN staging.line_stations ls ON ls.station_id = s.id\r\n      JOIN staging.lines l ON l.id = ls.line_id\r\n      WHERE l.name IN (${line:sqlstring})\r\n    )\r\n      AND $__timeFilter(production_day)\r\n) AS \"Quality Rate\";",
           "refId": "A",
           "sql": {
             "columns": [
@@ -731,122 +543,57 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            }
+            "mode": "thresholds"
           },
           "mappings": [
             {
               "options": {
-                "Fail": {
-                  "color": "yellow",
-                  "index": 1,
-                  "text": "Fail"
-                },
-                "Pass": {
+                "from": 0,
+                "result": {
                   "color": "green",
                   "index": 0,
-                  "text": "Pass"
+                  "text": "Excellent"
                 },
-                "Scrap": {
-                  "color": "red",
-                  "index": 2,
-                  "text": "Scrap"
-                }
+                "to": 3
               },
-              "type": "value"
-            }
-          ]
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Pass"
+              "type": "range"
             },
-            "properties": []
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 2,
-        "x": 6,
-        "y": 7
-      },
-      "id": 9,
-      "options": {
-        "displayLabels": [],
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "pieType": "pie",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "sort": "desc",
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.3.2",
-      "targets": [
-        {
-          "dataset": "postgres",
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT \r\n    DATE_TRUNC('week', production_day)::date AS \"time\",\r\n    SUM(good_count)  AS \"Pass\",\r\n    SUM(fail_count)  AS \"Fail\",\r\n    SUM(scrap_count) AS \"Scrap\"\r\nFROM public.defect_rate_kpi\r\nWHERE station_name IN (${station:sqlstring})\r\n  AND $__timeFilter(production_day)\r\nGROUP BY DATE_TRUNC('week', production_day)\r\nORDER BY DATE_TRUNC('week', production_day);",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
+            {
+              "options": {
+                "from": 3,
+                "result": {
+                  "color": "yellow",
+                  "index": 1,
+                  "text": "Acceptable"
                 },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "Quality Distribution",
-      "type": "piechart"
-    },
-    {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "afm4rznroj11ce"
-      },
-      "description": "MTBF (Mean Time Between Failures): average time between two failures (the higher, the better).\n\nMTTR (Mean Time To Repair): average repair time after a failure (the lower, the better).\n\nIndustrial target: MTBF > 100h, MTTR < 4h.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "max": 100,
-          "min": 0,
+                "to": 5
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 5,
+                "result": {
+                  "color": "orange",
+                  "index": 2,
+                  "text": "Under Monitoring"
+                },
+                "to": 10
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 10,
+                "result": {
+                  "index": 3,
+                  "text": "Critical"
+                },
+                "to": 100
+              },
+              "type": "range"
+            }
+          ],
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -855,53 +602,46 @@
                 "value": 0
               },
               {
-                "color": "red",
-                "value": 0
-              },
-              {
                 "color": "yellow",
-                "value": 50
+                "value": 3
               },
               {
-                "color": "green",
-                "value": 100
+                "color": "orange",
+                "value": 5
+              },
+              {
+                "color": "red",
+                "value": 10
               }
             ]
           },
-          "unit": "h"
+          "unit": "percent"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 7,
-        "x": 8,
-        "y": 7
+        "h": 6,
+        "w": 4,
+        "x": 10,
+        "y": 5
       },
-      "id": 3,
+      "id": 7,
       "options": {
-        "displayMode": "gradient",
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "maxVizHeight": 300,
-        "minVizHeight": 16,
-        "minVizWidth": 8,
-        "namePlacement": "auto",
-        "orientation": "horizontal",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "",
+          "fields": "/.*/",
           "values": false
         },
-        "showUnfilled": true,
-        "sizing": "auto",
-        "valueMode": "color"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
       "pluginVersion": "12.3.2",
       "targets": [
@@ -910,7 +650,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\r\n    m.station_name,\r\n    m.mtbf_hours AS \"Mean Time Between Failures\",\r\n    t.mttr_hours AS \"Mean Time To Repair\"\r\nFROM public.mtbf_kpi m\r\nJOIN public.mttr_kpi t ON m.station_id = t.station_id\r\nWHERE m.station_name IS NOT NULL\r\n    AND m.mtbf_hours IS NOT NULL\r\nORDER BY m.mtbf_hours ASC",
+          "rawSql": "SELECT \r\n  AVG(defect_rate_pct) AS \"Defect Rate (moyenne)\"\r\nFROM public.defect_rate_kpi\r\nWHERE station_name IN (\r\n    SELECT s.name FROM staging.stations s\r\n    JOIN staging.line_stations ls ON ls.station_id = s.id\r\n    JOIN staging.lines l ON l.id = ls.line_id\r\n    WHERE l.name IN (${line:sqlstring})\r\n  )\r\n  AND $__timeFilter(production_day);",
           "refId": "A",
           "sql": {
             "columns": [
@@ -931,16 +671,14 @@
           }
         }
       ],
-      "title": "MTBF / MTTR",
-      "transparent": true,
-      "type": "bargauge"
+      "title": "Quality Assessment",
+      "type": "stat"
     },
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
         "uid": "afm4rznroj11ce"
       },
-      "description": "Tracks daily scrap generation to identify quality losses and process instability.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -952,29 +690,16 @@
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
+            "fillOpacity": 80,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
             "lineWidth": 1,
-            "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
-            },
-            "showPoints": "auto",
-            "showValues": false,
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -988,17 +713,6 @@
                   "color": "green",
                   "index": 0
                 },
-                "to": 2
-              },
-              "type": "range"
-            },
-            {
-              "options": {
-                "from": 2,
-                "result": {
-                  "color": "yellow",
-                  "index": 1
-                },
                 "to": 5
               },
               "type": "range"
@@ -1006,6 +720,17 @@
             {
               "options": {
                 "from": 5,
+                "result": {
+                  "color": "yellow",
+                  "index": 1
+                },
+                "to": 8
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 8,
                 "result": {
                   "color": "red",
                   "index": 2
@@ -1020,18 +745,6 @@
               {
                 "color": "green",
                 "value": 0
-              },
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "yellow",
-                "value": 2
-              },
-              {
-                "color": "red",
-                "value": 5
               }
             ]
           },
@@ -1040,24 +753,33 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
-        "w": 9,
-        "x": 15,
-        "y": 7
+        "h": 11,
+        "w": 10,
+        "x": 14,
+        "y": 8
       },
-      "id": 2,
+      "id": 6,
       "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
         "legend": {
           "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
+        "orientation": "horizontal",
+        "showValue": "auto",
+        "stacking": "none",
         "tooltip": {
           "hideZeros": false,
           "mode": "single",
           "sort": "none"
-        }
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
       },
       "pluginVersion": "12.3.2",
       "targets": [
@@ -1066,7 +788,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\r\n  production_day AS \"time\",\r\n  scrap_rate_pct AS \"Scrap Rate\"\r\nFROM public.scrap_by_day_kpi\r\nWHERE station_name IN ($station)\r\n  AND $__timeFilter(production_day)\r\nORDER BY production_day;",
+          "rawSql": "SELECT\r\n    station_name AS \"Station\",\r\n    ROUND(AVG(defect_rate_pct),2) AS \"Defect Rate (%)\"\r\nFROM public.defect_rate_kpi\r\n    WHERE station_name IN (\r\n        SELECT s.name FROM staging.stations s\r\n        JOIN staging.line_stations ls ON ls.station_id = s.id\r\n        JOIN staging.lines l ON l.id = ls.line_id\r\n        WHERE l.name IN (${line:sqlstring})\r\n      )\r\n      AND $__timeFilter(production_day)\r\nGROUP BY station_name\r\nORDER BY \"Defect Rate (%)\" DESC\r\nLIMIT 10;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1087,9 +809,8 @@
           }
         }
       ],
-      "title": "Daily Scrap Rate Trend",
-      "transparent": true,
-      "type": "timeseries"
+      "title": "Top Defect Stations Analysis",
+      "type": "barchart"
     },
     {
       "datasource": {
@@ -1225,10 +946,10 @@
         ]
       },
       "gridPos": {
-        "h": 13,
-        "w": 12,
+        "h": 17,
+        "w": 14,
         "x": 0,
-        "y": 13
+        "y": 11
       },
       "id": 8,
       "options": {
@@ -1261,7 +982,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \r\n    DATE_TRUNC('week', production_day)::date AS \"time\",\r\n    ROUND(100.0 * SUM(good_count)  / NULLIF(SUM(total_bookings), 0), 2) AS \"Pass\",\r\n    ROUND(100.0 * SUM(fail_count)  / NULLIF(SUM(total_bookings), 0), 2) AS \"Fail\",\r\n    ROUND(100.0 * SUM(scrap_count) / NULLIF(SUM(total_bookings), 0), 2) AS \"Scrap\"\r\nFROM public.defect_rate_kpi\r\nWHERE station_name IN (${station:sqlstring})\r\n  AND $__timeFilter(production_day)\r\nGROUP BY DATE_TRUNC('week', production_day)\r\nORDER BY DATE_TRUNC('week', production_day);",
+          "rawSql": "SELECT \r\n    DATE_TRUNC('week', production_day)::date AS \"time\",\r\n    ROUND(100.0 * SUM(good_count)  / NULLIF(SUM(total_bookings), 0), 2) AS \"Pass\",\r\n    ROUND(100.0 * SUM(fail_count)  / NULLIF(SUM(total_bookings), 0), 2) AS \"Fail\",\r\n    ROUND(100.0 * SUM(scrap_count) / NULLIF(SUM(total_bookings), 0), 2) AS \"Scrap\"\r\nFROM public.defect_rate_kpi\r\n    WHERE station_name IN (\r\n        SELECT s.name FROM staging.stations s\r\n        JOIN staging.line_stations ls ON ls.station_id = s.id\r\n        JOIN staging.lines l ON l.id = ls.line_id\r\n        WHERE l.name IN (${line:sqlstring})\r\n    )\r\n  AND $__timeFilter(production_day)\r\nGROUP BY DATE_TRUNC('week', production_day)\r\nORDER BY DATE_TRUNC('week', production_day);",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1290,6 +1011,7 @@
         "type": "grafana-postgresql-datasource",
         "uid": "afm4rznroj11ce"
       },
+      "description": "Displays the monthly evolution of scrap generation to monitor long-term quality performance.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1324,6 +1046,17 @@
                   "color": "green",
                   "index": 0
                 },
+                "to": 2
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 2,
+                "result": {
+                  "color": "yellow",
+                  "index": 1
+                },
                 "to": 5
               },
               "type": "range"
@@ -1332,20 +1065,10 @@
               "options": {
                 "from": 5,
                 "result": {
-                  "color": "yellow",
-                  "index": 1
-                },
-                "to": 8
-              },
-              "type": "range"
-            },
-            {
-              "options": {
-                "from": 8,
-                "result": {
                   "color": "red",
                   "index": 2
-                }
+                },
+                "to": 100
               },
               "type": "range"
             }
@@ -1356,6 +1079,18 @@
               {
                 "color": "green",
                 "value": 0
+              },
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 2
+              },
+              {
+                "color": "red",
+                "value": 5
               }
             ]
           },
@@ -1364,15 +1099,16 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 10,
-        "w": 12,
-        "x": 12,
-        "y": 14
+        "h": 11,
+        "w": 10,
+        "x": 14,
+        "y": 19
       },
-      "id": 6,
+      "id": 4,
       "options": {
         "barRadius": 0,
         "barWidth": 0.97,
+        "colorByField": "Monthly Scrap Rate",
         "fullHighlight": false,
         "groupWidth": 0.7,
         "legend": {
@@ -1382,7 +1118,7 @@
           "showLegend": true
         },
         "orientation": "horizontal",
-        "showValue": "auto",
+        "showValue": "always",
         "stacking": "none",
         "tooltip": {
           "hideZeros": false,
@@ -1399,7 +1135,201 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\r\n    station_name AS \"Station\",\r\n    ROUND(AVG(defect_rate_pct),2) AS \"Defect Rate (%)\"\r\nFROM public.defect_rate_kpi\r\nWHERE $__timeFilter(production_day)\r\nGROUP BY station_name\r\nORDER BY \"Defect Rate (%)\" DESC\r\nLIMIT 10;",
+          "rawSql": "SELECT\r\n    date_trunc('month', production_day::timestamp) AS \"time\",\r\n    AVG(scrap_rate_pct) AS scrap_rate\r\nFROM public.scrap_by_day_kpi\r\n    WHERE station_name IN (\r\n        SELECT s.name FROM staging.stations s\r\n        JOIN staging.line_stations ls ON ls.station_id = s.id\r\n        JOIN staging.lines l ON l.id = ls.line_id\r\n        WHERE l.name IN (${line:sqlstring})\r\n      )\r\n  AND $__timeFilter(production_day::timestamp)\r\nGROUP BY 1\r\nORDER BY 1;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [
+                  3,
+                  0
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": [
+                  "A"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "last"
+              },
+              "type": "query"
+            }
+          ],
+          "datasource": {
+            "name": "Expression",
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "hide": false,
+          "refId": "B",
+          "type": "classic_conditions"
+        }
+      ],
+      "title": "Monthly Scrap Rate Trend",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "afm4rznroj11ce"
+      },
+      "description": "Quality rate trend over time.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds",
+            "seriesBy": "last"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 5,
+            "pointSize": 4,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [
+            {
+              "options": {
+                "from": 95,
+                "result": {
+                  "color": "green",
+                  "index": 0
+                }
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 90,
+                "result": {
+                  "color": "orange",
+                  "index": 1
+                },
+                "to": 95
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "result": {
+                  "color": "red",
+                  "index": 2
+                },
+                "to": 90
+              },
+              "type": "range"
+            }
+          ],
+          "max": 100,
+          "min": 80,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 90
+              },
+              {
+                "color": "green",
+                "value": 95
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 14,
+        "x": 0,
+        "y": 28
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "dataset": "postgres",
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n    production_day AS \"time\",\r\n    100 - defect_rate_pct AS \"Quality Rate (%)\",\r\n\r\n    (\r\n      SELECT MIN(100 - defect_rate_pct)\r\n      FROM public.defect_rate_kpi\r\n      WHERE station_name IN (\r\n        SELECT s.name FROM staging.stations s\r\n        JOIN staging.line_stations ls ON ls.station_id = s.id\r\n        JOIN staging.lines l ON l.id = ls.line_id\r\n        WHERE l.name IN (${line:sqlstring})\r\n      )\r\n      AND $__timeFilter(production_day)\r\n    ) AS \"Min\",\r\n\r\n    (\r\n      SELECT MAX(100 - defect_rate_pct)\r\n      FROM public.defect_rate_kpi\r\n      WHERE station_name IN (\r\n        SELECT s.name FROM staging.stations s\r\n        JOIN staging.line_stations ls ON ls.station_id = s.id\r\n        JOIN staging.lines l ON l.id = ls.line_id\r\n        WHERE l.name IN (${line:sqlstring})\r\n      )\r\n      AND $__timeFilter(production_day)\r\n    ) AS \"Max\",\r\n\r\n    95 AS \"World-class\"\r\n\r\nFROM public.defect_rate_kpi\r\nWHERE station_name IN (\r\n  SELECT s.name FROM staging.stations s\r\n  JOIN staging.line_stations ls ON ls.station_id = s.id\r\n  JOIN staging.lines l ON l.id = ls.line_id\r\n  WHERE l.name IN (${line:sqlstring})\r\n)\r\nAND $__timeFilter(production_day)\r\nORDER BY production_day;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1420,8 +1350,165 @@
           }
         }
       ],
-      "title": "Top Defect Stations Analysis",
-      "type": "barchart"
+      "title": "Quality Trend",
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "afm4rznroj11ce"
+      },
+      "description": "Tracks daily scrap generation to identify quality losses and process instability.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [
+            {
+              "options": {
+                "from": 0,
+                "result": {
+                  "color": "green",
+                  "index": 0
+                },
+                "to": 2
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 2,
+                "result": {
+                  "color": "yellow",
+                  "index": 1
+                },
+                "to": 5
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 5,
+                "result": {
+                  "color": "red",
+                  "index": 2
+                }
+              },
+              "type": "range"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 2
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 10,
+        "x": 14,
+        "y": 30
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "dataset": "postgres",
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  production_day AS \"time\",\r\n  scrap_rate_pct AS \"Scrap Rate\"\r\nFROM public.scrap_by_day_kpi\r\nWHERE station_name IN ($station)\r\n  AND $__timeFilter(production_day)\r\nORDER BY production_day;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Daily Scrap Rate Trend",
+      "transparent": true,
+      "type": "timeseries"
     }
   ],
   "preload": false,
@@ -1432,19 +1519,36 @@
       {
         "current": {
           "text": [
-            "FRA-PP-L01-01"
+            "ASS-L01"
           ],
           "value": [
-            "FRA-PP-L01-01"
+            "ASS-L01"
           ]
         },
-        "definition": "SELECT DISTINCT station_name \nFROM public.dashboard_overview \nORDER BY station_name;",
+        "definition": "SELECT name FROM staging.lines ORDER BY name",
+        "includeAll": true,
+        "multi": true,
+        "name": "line",
+        "options": [],
+        "query": "SELECT name FROM staging.lines ORDER BY name",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
+        },
+        "definition": "SELECT DISTINCT name\nFROM staging.stations order by name",
         "description": "",
         "includeAll": true,
         "multi": true,
         "name": "station",
         "options": [],
-        "query": "SELECT DISTINCT station_name \nFROM public.dashboard_overview \nORDER BY station_name;",
+        "query": "SELECT DISTINCT name\nFROM staging.stations order by name",
         "refresh": 1,
         "regex": "",
         "type": "query"
@@ -1459,5 +1563,5 @@
   "timezone": "browser",
   "title": "🎯 QUALITY ANALYTICS ",
   "uid": "adsm2qn",
-  "version": 17
+  "version": 40
 }
