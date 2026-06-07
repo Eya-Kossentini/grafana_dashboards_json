@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 3,
+  "id": 0,
   "links": [
     {
       "asDropdown": false,
@@ -95,7 +95,8 @@
           "custom": {
             "align": "auto",
             "cellOptions": {
-              "type": "auto"
+              "mode": "gradient",
+              "type": "color-background"
             },
             "footer": {
               "reducers": []
@@ -107,12 +108,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "#e6eef7",
                 "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           }
@@ -120,8 +117,8 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 4,
-        "w": 6,
+        "h": 8,
+        "w": 5,
         "x": 0,
         "y": 0
       },
@@ -191,9 +188,9 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 4,
+        "h": 8,
         "w": 3,
-        "x": 6,
+        "x": 5,
         "y": 0
       },
       "id": 2,
@@ -221,7 +218,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \r\n    ROUND(SUM(downtime_hours)::numeric / COUNT(DISTINCT (production_day, station_name)), 1) AS \"Avg Downtime/Day/Station (h)\"\r\nFROM public.downtime_by_station_kpi\r\nWHERE station_name IN (${station:sqlstring})\r\n  AND $__timeFilter(production_day)\r\n  AND downtime_type NOT IN ('Running', 'Micro Stop');",
+          "rawSql": "SELECT \r\n    ROUND(SUM(downtime_hours)::numeric / COUNT(DISTINCT (production_day, station_name)), 1) AS \"Avg Downtime/Day/Station (h)\"\r\nFROM public.downtime_by_station_kpi\r\nWHERE station_name IN (\r\n  SELECT s.name FROM staging.stations s\r\n  JOIN staging.line_stations ls ON ls.station_id = s.id\r\n  JOIN staging.lines l ON l.id = ls.line_id\r\n  WHERE l.name IN (${line:sqlstring})\r\n)\r\n  AND $__timeFilter(production_day)\r\n  AND downtime_type NOT IN ('Running', 'Micro Stop');",
           "refId": "A",
           "sql": {
             "columns": [
@@ -243,101 +240,6 @@
         }
       ],
       "title": "⏱️Downtime Total",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "afm4rznroj11ce"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "blue",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 0
-              },
-              {
-                "color": "dark-orange",
-                "value": 60
-              },
-              {
-                "color": "yellow",
-                "value": 75
-              },
-              {
-                "color": "green",
-                "value": 85
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 3,
-        "x": 9,
-        "y": 0
-      },
-      "id": 1,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.3.2",
-      "targets": [
-        {
-          "dataset": "postgres",
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT \r\n    ROUND(AVG(availability_pct)::numeric, 2) AS \"Availability Global\"\r\nFROM public.availability_kpi\r\nWHERE station_name IN (${station:sqlstring})\r\n  AND $__timeFilter(production_day);",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "🟢 Availability Global ",
       "type": "stat"
     },
     {
@@ -400,14 +302,14 @@
         ]
       },
       "gridPos": {
-        "h": 6,
-        "w": 5,
-        "x": 13,
+        "h": 8,
+        "w": 6,
+        "x": 8,
         "y": 0
       },
       "id": 9,
       "options": {
-        "displayMode": "gradient",
+        "displayMode": "lcd",
         "legend": {
           "calcs": [],
           "displayMode": "list",
@@ -418,7 +320,7 @@
         "minVizHeight": 16,
         "minVizWidth": 8,
         "namePlacement": "auto",
-        "orientation": "horizontal",
+        "orientation": "vertical",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -494,9 +396,9 @@
         ]
       },
       "gridPos": {
-        "h": 6,
-        "w": 5,
-        "x": 19,
+        "h": 8,
+        "w": 4,
+        "x": 14,
         "y": 0
       },
       "id": 5,
@@ -556,6 +458,110 @@
       "title": "📊 Planned vs Unplanned Downtime",
       "transparent": true,
       "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "afm4rznroj11ce"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "green",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Availability Global"
+            },
+            "properties": []
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "horizontal",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {
+          "titleSize": 32,
+          "valueSize": 30
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "dataset": "postgres",
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \r\n    ROUND(AVG(availability_pct)::numeric, 2) AS \"Availability Global\",\r\n    ROUND(MIN(availability_pct)::numeric, 2) AS \"Min\",\r\n    ROUND(MAX(availability_pct)::numeric, 2) AS \"Max\"\r\nFROM public.availability_kpi\r\nWHERE station_name IN (\r\n  SELECT s.name FROM staging.stations s\r\n  JOIN staging.line_stations ls ON ls.station_id = s.id\r\n  JOIN staging.lines l ON l.id = ls.line_id\r\n  WHERE l.name IN (${line:sqlstring})\r\n)\r\nAND $__timeFilter(production_day);",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "🟢 Availability Global ",
+      "transparent": true,
+      "type": "stat"
     },
     {
       "datasource": {
@@ -752,10 +758,10 @@
         ]
       },
       "gridPos": {
-        "h": 9,
+        "h": 8,
         "w": 13,
         "x": 0,
-        "y": 4
+        "y": 8
       },
       "id": 12,
       "options": {
@@ -793,308 +799,6 @@
       "title": "Top 5 Causes — 80% of downtime concentrated here",
       "transparent": true,
       "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "afm4rznroj11ce"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "showValues": false,
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "h"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 11,
-        "x": 13,
-        "y": 6
-      },
-      "id": 6,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.3.2",
-      "targets": [
-        {
-          "dataset": "postgres",
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT \r\n    production_day AS \"time\",\r\n    SUM(downtime_hours) AS \"Breakdown Hours\"\r\nFROM public.downtime_by_station_kpi\r\nWHERE station_name IN (${station:sqlstring})\r\n  AND $__timeFilter(production_day)\r\n  AND downtime_type IN ('Breakdown', 'Part Shortage')\r\nGROUP BY production_day\r\nORDER BY production_day;",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "🚨 Breakdown Trend (6 months)",
-      "transparent": true,
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "afm4rznroj11ce"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "showValues": false,
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "max": 100,
-          "min": 50,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Availability %"
-            },
-            "properties": [
-              {
-                "id": "custom.lineWidth",
-                "value": 4
-              },
-              {
-                "id": "custom.lineStyle",
-                "value": {
-                  "fill": "solid"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "red",
-                  "mode": "shades"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Target"
-            },
-            "properties": [
-              {
-                "id": "custom.lineStyle",
-                "value": {
-                  "dash": [
-                    10,
-                    10
-                  ],
-                  "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "yellow",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "World-class"
-            },
-            "properties": [
-              {
-                "id": "custom.lineStyle",
-                "value": {
-                  "fill": "solid"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "green",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 13,
-        "x": 0,
-        "y": 13
-      },
-      "id": 7,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.3.2",
-      "targets": [
-        {
-          "dataset": "postgres",
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT \r\n    production_day AS \"time\",\r\n    AVG(availability_pct) AS \"Availability %\",\r\n    85 AS \"Target\",\r\n    95 AS \"World-class\"\r\nFROM public.oee_kpi\r\nWHERE station_name IN (${station:sqlstring})\r\n  AND $__timeFilter(production_day)\r\nGROUP BY production_day\r\nORDER BY production_day;",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "📈 Availability Trend vs Targets",
-      "transparent": true,
-      "type": "timeseries"
     },
     {
       "datasource": {
@@ -1148,7 +852,7 @@
         "h": 8,
         "w": 11,
         "x": 13,
-        "y": 14
+        "y": 8
       },
       "id": 8,
       "options": {
@@ -1182,7 +886,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \r\n    downtime_type AS \"Cause\",\r\n    ROUND(SUM(downtime_hours)::numeric, 1) AS \"Hours\",\r\n    SUM(downtime_events) AS \"Events\"\r\nFROM public.downtime_by_station_kpi\r\nWHERE station_name IN (${station:sqlstring})\r\n  AND $__timeFilter(production_day)\r\n  AND downtime_type NOT IN ('Running', 'Micro Stop')\r\nGROUP BY downtime_type\r\nORDER BY SUM(downtime_hours) DESC\r\nLIMIT 10;",
+          "rawSql": "SELECT \r\n    downtime_type AS \"Cause\",\r\n    ROUND(SUM(downtime_hours)::numeric, 1) AS \"Hours\",\r\n    SUM(downtime_events) AS \"Events\"\r\nFROM public.downtime_by_station_kpi\r\nWHERE station_name IN (\r\n  SELECT s.name FROM staging.stations s\r\n  JOIN staging.line_stations ls ON ls.station_id = s.id\r\n  JOIN staging.lines l ON l.id = ls.line_id\r\n  WHERE l.name IN (${line:sqlstring})\r\n)\r\n  AND $__timeFilter(production_day)\r\n  AND downtime_type NOT IN ('Running', 'Micro Stop')\r\nGROUP BY downtime_type\r\nORDER BY SUM(downtime_hours) DESC\r\nLIMIT 10;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1206,6 +910,377 @@
       "title": "🎯 Top 10 Downtime Causes (Pareto)",
       "transparent": true,
       "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "afm4rznroj11ce"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisGridShow": true,
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMax": 100,
+            "axisSoftMin": 50,
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "max": 100,
+          "min": 50,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Availability %"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "shades"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Min"
+            },
+            "properties": [
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    10,
+                    10
+                  ],
+                  "fill": "dash"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "World-class"
+            },
+            "properties": [
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    10,
+                    10
+                  ],
+                  "fill": "dash"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Max"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    10,
+                    10
+                  ],
+                  "fill": "dash"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 13,
+        "x": 0,
+        "y": 16
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "dataset": "postgres",
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \r\n    production_day AS \"time\",\r\n    AVG(availability_pct) AS \"Availability %\",\r\n    MIN(availability_pct) OVER () AS \"Min\",\r\n    MAX(availability_pct) OVER () AS \"Max\",\r\n    95 AS \"World-class\"\r\nFROM public.oee_kpi\r\nWHERE station_name IN (\r\n  SELECT s.name FROM staging.stations s\r\n  JOIN staging.line_stations ls ON ls.station_id = s.id\r\n  JOIN staging.lines l ON l.id = ls.line_id\r\n  WHERE l.name IN (${line:sqlstring})\r\n)\r\n  AND $__timeFilter(production_day)\r\nGROUP BY production_day, availability_pct\r\nORDER BY production_day;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "📈 Availability Trend vs Targets",
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "afm4rznroj11ce"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "h"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Min"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Max"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Breakdown Hours"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 11,
+        "x": 13,
+        "y": 16
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "dataset": "postgres",
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \r\n    production_day AS \"time\",\r\n    SUM(downtime_hours) AS \"Breakdown Hours\",\r\n    MIN(downtime_hours) OVER () AS \"Min\",\r\n    MAX(downtime_hours) OVER () AS \"Max\"\r\nFROM public.downtime_by_station_kpi\r\nWHERE station_name IN (\r\n  SELECT s.name FROM staging.stations s\r\n  JOIN staging.line_stations ls ON ls.station_id = s.id\r\n  JOIN staging.lines l ON l.id = ls.line_id\r\n  WHERE l.name IN (${line:sqlstring})\r\n)\r\n  AND $__timeFilter(production_day)\r\n  AND downtime_type IN ('Breakdown', 'Part Shortage')\r\nGROUP BY production_day, downtime_hours\r\nORDER BY production_day;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "🚨 Breakdown Trend (6 months)",
+      "transparent": true,
+      "type": "timeseries"
     }
   ],
   "preload": false,
@@ -1215,10 +1290,35 @@
     "list": [
       {
         "current": {
-          "text": "FRA-PP-L01-03",
-          "value": "FRA-PP-L01-03"
+          "text": [
+            "GEN-LINE-125"
+          ],
+          "value": [
+            "GEN-LINE-125"
+          ]
+        },
+        "definition": "SELECT name FROM staging.lines ORDER BY name",
+        "includeAll": true,
+        "multi": true,
+        "name": "line",
+        "options": [],
+        "query": "SELECT name FROM staging.lines ORDER BY name",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": [
+            "FRA-PP-L01-03"
+          ],
+          "value": [
+            "FRA-PP-L01-03"
+          ]
         },
         "definition": "select station_name from public.downtime_by_station_kpi;",
+        "includeAll": true,
+        "multi": true,
         "name": "station",
         "options": [],
         "query": "select station_name from public.downtime_by_station_kpi;",
@@ -1236,5 +1336,5 @@
   "timezone": "browser",
   "title": "⚙️ AVAILABILITY & DOWNTIME ",
   "uid": "adhntwm",
-  "version": 23
+  "version": 43
 }
