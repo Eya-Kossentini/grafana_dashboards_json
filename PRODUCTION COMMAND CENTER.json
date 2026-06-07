@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 9,
+  "id": 0,
   "links": [],
   "panels": [
     {
@@ -28,7 +28,7 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 11,
+        "w": 24,
         "x": 0,
         "y": 0
       },
@@ -55,8 +55,10 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "fixedColor": "super-light-green",
+            "mode": "fixed"
           },
+          "decimals": 2,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -67,19 +69,7 @@
               },
               {
                 "color": "red",
-                "value": 0
-              },
-              {
-                "color": "orange",
-                "value": 60
-              },
-              {
-                "color": "yellow",
-                "value": 75
-              },
-              {
-                "color": "green",
-                "value": 85
+                "value": 80
               }
             ]
           },
@@ -88,17 +78,17 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 3,
-        "w": 4,
-        "x": 12,
-        "y": 0
+        "h": 4,
+        "w": 12,
+        "x": 0,
+        "y": 3
       },
-      "id": 2,
+      "id": 8,
       "options": {
         "colorMode": "background",
         "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
+        "justifyMode": "center",
+        "orientation": "vertical",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
@@ -108,7 +98,11 @@
           "values": false
         },
         "showPercentChange": false,
-        "textMode": "auto",
+        "text": {
+          "titleSize": 40,
+          "valueSize": 30
+        },
+        "textMode": "value_and_name",
         "wideLayout": true
       },
       "pluginVersion": "12.3.2",
@@ -118,7 +112,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \r\n    ROUND(AVG(oee_pct)::numeric, 1) AS \"OEE Global\"\r\nFROM public.oee_kpi\r\nWHERE production_day >= NOW() - INTERVAL '30 days';",
+          "rawSql": "SELECT \r\n    ROUND(AVG(oee_pct) FILTER (WHERE production_day >= NOW() - INTERVAL '30 days')::numeric, 1) AS \"OEE Global\",\r\n    ROUND(AVG(oee_pct) FILTER (WHERE production_day >= NOW() - INTERVAL '30 days')::numeric, 1)\r\n        - ROUND(AVG(oee_pct) FILTER (WHERE production_day >= NOW() - INTERVAL '60 days' AND production_day < NOW() - INTERVAL '30 days')::numeric, 1) AS \"Last Month \"\r\nFROM public.oee_kpi\r\nWHERE production_day >= NOW() - INTERVAL '60 days';",
           "refId": "A",
           "sql": {
             "columns": [
@@ -139,7 +133,7 @@
           }
         }
       ],
-      "title": "🎯 OEE Global",
+      "title": "OEE Global - 30 last days",
       "transparent": true,
       "type": "stat"
     },
@@ -151,8 +145,11 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "fixedColor": "super-light-yellow",
+            "mode": "fixed"
           },
+          "decimals": 2,
+          "fieldMinMax": false,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -160,22 +157,6 @@
               {
                 "color": "super-light-purple",
                 "value": 0
-              },
-              {
-                "color": "red",
-                "value": 0
-              },
-              {
-                "color": "orange",
-                "value": 80
-              },
-              {
-                "color": "#EAB839",
-                "value": 90
-              },
-              {
-                "color": "green",
-                "value": 95
               }
             ]
           },
@@ -184,17 +165,17 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 3,
-        "w": 4,
-        "x": 16,
-        "y": 0
+        "h": 4,
+        "w": 12,
+        "x": 12,
+        "y": 3
       },
       "id": 5,
       "options": {
         "colorMode": "background",
         "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
+        "justifyMode": "center",
+        "orientation": "vertical",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
@@ -204,7 +185,11 @@
           "values": false
         },
         "showPercentChange": false,
-        "textMode": "auto",
+        "text": {
+          "titleSize": 40,
+          "valueSize": 30
+        },
+        "textMode": "value_and_name",
         "wideLayout": true
       },
       "pluginVersion": "12.3.2",
@@ -214,7 +199,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \r\n    ROUND(AVG(quality_pct)::numeric, 1) AS \"Quality Global\"\r\nFROM public.quality_kpi\r\nWHERE production_day >= NOW() - INTERVAL '30 days';",
+          "rawSql": "SELECT \r\n    ROUND(AVG(quality_pct) FILTER (WHERE production_day >= NOW() - INTERVAL '30 days')::numeric, 1) AS \"Quality Global\",\r\n    ROUND(AVG(quality_pct) FILTER (WHERE production_day >= NOW() - INTERVAL '30 days')::numeric, 1)\r\n        - ROUND(AVG(quality_pct) FILTER (WHERE production_day >= NOW() - INTERVAL '60 days' AND production_day < NOW() - INTERVAL '30 days')::numeric, 1) AS \"Last Month \"\r\nFROM public.quality_kpi\r\nWHERE production_day >= NOW() - INTERVAL '60 days';",
           "refId": "A",
           "sql": {
             "columns": [
@@ -235,101 +220,7 @@
           }
         }
       ],
-      "title": "✅ Quality Global",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "afm4rznroj11ce"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "#EAB839",
-                "value": 1
-              },
-              {
-                "color": "orange",
-                "value": 3
-              },
-              {
-                "color": "red",
-                "value": 5
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 4,
-        "x": 20,
-        "y": 0
-      },
-      "id": 3,
-      "options": {
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.3.2",
-      "targets": [
-        {
-          "dataset": "postgres",
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT \r\n    COUNT(*) AS \"Stations Critiques\"\r\nFROM public.failure_loss_diagnostic_kpi\r\nWHERE criticality_level IN ('Critical', 'High');",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "🚨 Stations Critiques",
+      "title": "Quality Global - 30 last days",
       "type": "stat"
     },
     {
@@ -436,10 +327,10 @@
         ]
       },
       "gridPos": {
-        "h": 6,
+        "h": 5,
         "w": 24,
         "x": 0,
-        "y": 3
+        "y": 7
       },
       "id": 7,
       "options": {
@@ -487,7 +378,7 @@
         "h": 26,
         "w": 24,
         "x": 0,
-        "y": 9
+        "y": 12
       },
       "id": 6,
       "options": {
@@ -496,7 +387,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "<div style=\"\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n  gap: 18px;\n  padding: 16px;\n  width: 100%;\n  box-sizing: border-box;\n\">\n\n<!-- PERFORMANCE ANALYTICS-->\n<a target=\"_blank\" href=\"http://localhost:3000/d/ad7pzx5/f09f938a-performance-analytics?orgId=1&from=now-6h&to=now&timezone=browser&var-station=$__all\" style=\"text-decoration: none;\">\n<div style=\"background: linear-gradient(135deg, #1F9F4A 0%, #2EAA5C 100%); padding: 22px;\nmin-height: 180px; border-radius: 14px; text-align: center; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: 0.3s;\">\n<div style=\"font-size: 48px;\">📊</div>\n<div style=\"font-size: 18px; font-weight: bold; margin-top: 10px;\">\nPERFORMANCE<br>ANALYTICS\n</div>\n<div style=\"font-size: 12px; margin-top: 8px; opacity: 0.9;\">\nOEE • Reliability • KPIs\n</div>\n</div>\n</a>\n\n<!-- QUALITY -->\n<a target=\"_blank\" href=\"http://localhost:3000/d/adsm2qn/quality-analytics-dashboard?orgId=1&from=now-6M&to=now&timezone=browser\" style=\"text-decoration: none;\">\n<div style=\"background: linear-gradient(135deg, #1E88E5 0%, #42A5F5 100%); padding: 22px;\nmin-height: 180px; border-radius: 14px; text-align: center; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: 0.3s;\">\n<div style=\"font-size: 48px;\">🎯</div>\n<div style=\"font-size: 18px; font-weight: bold; margin-top: 10px;\">\nQUALITY<br>ANALYTICS\n</div>\n<div style=\"font-size: 12px; margin-top: 8px; opacity: 0.9;\">\nDefects • Scrap • Yield\n</div>\n</div>\n</a>\n\n<!-- AVAILABILITY -->\n<a target=\"_blank\" href=\"http://localhost:3000/d/adhntwm/availability-and-downtime-dashboard?orgId=1&from=now-6M&to=now&timezone=browser\" style=\"text-decoration: none;\">\n<div style=\"background: linear-gradient(135deg, #FB8C00 0%, #FFA726 100%); padding: 22px;\nmin-height: 180px; border-radius: 14px; text-align: center; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: 0.3s;\">\n<div style=\"font-size: 48px;\">⚙️</div>\n<div style=\"font-size: 18px; font-weight: bold; margin-top: 10px;\">\nAVAILABILITY<br>& DOWNTIME\n</div>\n<div style=\"font-size: 12px; margin-top: 8px; opacity: 0.9;\">\nLosses • Stops • Trends\n</div>\n</div>\n</a>\n\n<!-- AI -->\n<a target=\"_blank\" href=\"http://localhost:3000/d/adbz84z/ai-diagnostic-and-recommendations?orgId=1&from=now-6h&to=now&timezone=browser\" style=\"text-decoration: none;\">\n<div style=\"background: linear-gradient(135deg, #8E24AA 0%, #BA68C8 100%); padding: 22px;\nmin-height: 180px; border-radius: 14px; text-align: center; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: 0.3s;\">\n<div style=\"font-size: 48px;\">🧠</div>\n<div style=\"font-size: 18px; font-weight: bold; margin-top: 10px;\">\nAI<br>DIAGNOSTIC\n</div>\n<div style=\"font-size: 12px; margin-top: 8px; opacity: 0.9;\">\nSmart Recommendations\n</div>\n</div>\n</a>\n\n<!-- ROUTING -->\n<a target=\"_blank\" href=\"http://localhost:3000/d/adbshfc/f09f9ba0-production-routing-overview?orgId=1&from=now-90d&to=now&timezone=browser&var-part_number=$__all&var-workplan_type=$__all&var-step_type=auto\" style=\"text-decoration: none;\">\n<div style=\"background: linear-gradient(135deg, #3949AB 0%, #5C6BC0 100%); padding: 22px;\nmin-height: 180px; border-radius: 14px; text-align: center; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: 0.3s;\">\n<div style=\"font-size: 48px;\">🛠️</div>\n<div style=\"font-size: 18px; font-weight: bold; margin-top: 10px;\">\nPRODUCTION<br>ROUTING\n</div>\n<div style=\"font-size: 12px; margin-top: 8px; opacity: 0.9;\">\nFlow • Bottlenecks • Steps\n</div>\n</div>\n</a>\n\n<!-- RELIABILITY -->\n<a target=\"_blank\" href=\"http://localhost:3000/d/adqztjb/f09f94a7-reliability-and-maintenance?orgId=1&from=now-5y&to=now&timezone=browser&var-station=$__all\">\n<div style=\"background: linear-gradient(135deg, #455A64 0%, #607D8B 100%); padding: 22px;\nmin-height: 180px; border-radius: 14px; text-align: center; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: 0.3s;\">\n<div style=\"font-size: 48px;\">🔧</div>\n<div style=\"font-size: 18px; font-weight: bold; margin-top: 10px;\">\nRELIABILITY &<br>MAINTENANCE\n</div>\n<div style=\"font-size: 12px; margin-top: 8px; opacity: 0.9;\">\nFailures • MTTR • Alerts\n</div>\n</div>\n</a>\n\n<!-- PARETO -->\n<a target=\"_blank\" href=\"http://localhost:3000/d/adlplfk/f09f9389-production-losses-pareto?orgId=1&from=now-6M&to=now&timezone=browser&var-loss_type=Waiting&var-station=HDR-MLD-L01-01\" style=\"text-decoration: none;\">\n<div style=\"background: linear-gradient(135deg, #6D4C41 0%, #8D6E63 100%); padding: 22px;\nmin-height: 180px; border-radius: 14px; text-align: center; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: 0.3s;\">\n<div style=\"font-size: 48px;\">📉</div>\n<div style=\"font-size: 18px; font-weight: bold; margin-top: 10px;\">\nPRODUCTION LOSSES<br>& PARETO\n</div>\n<div style=\"font-size: 12px; margin-top: 8px; opacity: 0.9;\">\nCritical Loss Analysis\n</div>\n</div>\n</a>\n\n<!-- ALERT CENTER -->\n<a target=\"_blank\" href=\"http://localhost:3000/d/ad66rt2/f09f9aa8-production-alert-center?orgId=1&from=now-6h&to=now&timezone=browser&var-station=HDR-MLD-L01-02\" style=\"text-decoration: none;\">\n<div style=\"background: linear-gradient(135deg, #C62828 0%, #FF5252 100%); padding: 22px;\nmin-height: 180px; border-radius: 14px; text-align: center; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: 0.3s;\">\n<div style=\"font-size: 48px;\">🚨</div>\n<div style=\"font-size: 18px; font-weight: bold; margin-top: 10px;\">\nPRODUCTION<br>ALERT CENTER\n</div>\n<div style=\"font-size: 12px; margin-top: 8px; opacity: 0.9;\">\nReal-Time Monitoring\n</div>\n</div>\n</a>\n\n</div>",
+        "content": "<div style=\"\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n  gap: 18px;\n  padding: 16px;\n  width: 100%;\n  box-sizing: border-box;\n\">\n\n<a target=\"_blank\" href=\"http://localhost:3000/d/ad7pzx5/f09f938a-performance-analytics?orgId=1&from=now-6h&to=now&timezone=browser&var-station=$__all\" style=\"text-decoration: none;\">\n<div style=\"background: rgb(30, 58, 138); padding: 22px; min-height: 180px; border-radius: 14px; text-align: center; color: rgb(230, 238, 247); box-sizing: border-box;\">\n<div style=\"font-size: 48px;\">📊</div>\n<div style=\"font-size: 18px; font-weight: bold; margin-top: 10px; color: rgb(230, 238, 247);\">PERFORMANCE<br>ANALYTICS</div>\n<div style=\"font-size: 12px; margin-top: 8px; color: rgba(230, 238, 247, 0.75);\">OEE • Reliability • KPIs</div>\n</div>\n</a>\n\n<a target=\"_blank\" href=\"http://localhost:3000/d/adsm2qn/quality-analytics-dashboard?orgId=1&from=now-6M&to=now&timezone=browser\" style=\"text-decoration: none;\">\n<div style=\"background: rgb(30, 58, 138); padding: 22px; min-height: 180px; border-radius: 14px; text-align: center; color: rgb(230, 238, 247); box-sizing: border-box;\">\n<div style=\"font-size: 48px;\">🎯</div>\n<div style=\"font-size: 18px; font-weight: bold; margin-top: 10px; color: rgb(230, 238, 247);\">QUALITY<br>ANALYTICS</div>\n<div style=\"font-size: 12px; margin-top: 8px; color: rgba(230, 238, 247, 0.75);\">Defects • Scrap • Yield</div>\n</div>\n</a>\n\n<a target=\"_blank\" href=\"http://localhost:3000/d/adhntwm/availability-and-downtime-dashboard?orgId=1&from=now-6M&to=now&timezone=browser\" style=\"text-decoration: none;\">\n<div style=\"background: rgb(30, 58, 138); padding: 22px; min-height: 180px; border-radius: 14px; text-align: center; color: rgb(230, 238, 247); box-sizing: border-box;\">\n<div style=\"font-size: 48px;\">⚙️</div>\n<div style=\"font-size: 18px; font-weight: bold; margin-top: 10px; color: rgb(230, 238, 247);\">AVAILABILITY<br>& DOWNTIME</div>\n<div style=\"font-size: 12px; margin-top: 8px; color: rgba(230, 238, 247, 0.75);\">Losses • Stops • Trends</div>\n</div>\n</a>\n\n<a target=\"_blank\" href=\"http://localhost:3000/d/adbz84z/ai-diagnostic-and-recommendations?orgId=1&from=now-6h&to=now&timezone=browser\" style=\"text-decoration: none;\">\n<div style=\"background: rgb(30, 58, 138); padding: 22px; min-height: 180px; border-radius: 14px; text-align: center; color: rgb(230, 238, 247); box-sizing: border-box;\">\n<div style=\"font-size: 48px;\">🧠</div>\n<div style=\"font-size: 18px; font-weight: bold; margin-top: 10px; color: rgb(230, 238, 247);\">AI<br>DIAGNOSTIC</div>\n<div style=\"font-size: 12px; margin-top: 8px; color: rgba(230, 238, 247, 0.75);\">Smart Recommendations</div>\n</div>\n</a>\n\n<a target=\"_blank\" href=\"http://localhost:3000/d/adbshfc/f09f9ba0-production-routing-overview?orgId=1&from=now-90d&to=now&timezone=browser&var-part_number=$__all&var-workplan_type=$__all&var-step_type=auto\" style=\"text-decoration: none;\">\n<div style=\"background: rgb(30, 58, 138); padding: 22px; min-height: 180px; border-radius: 14px; text-align: center; color: rgb(230, 238, 247); box-sizing: border-box;\">\n<div style=\"font-size: 48px;\">🛠️</div>\n<div style=\"font-size: 18px; font-weight: bold; margin-top: 10px; color: rgb(230, 238, 247);\">PRODUCTION<br>ROUTING</div>\n<div style=\"font-size: 12px; margin-top: 8px; color: rgba(230, 238, 247, 0.75);\">Flow • Bottlenecks • Steps</div>\n</div>\n</a>\n\n<a target=\"_blank\" href=\"http://localhost:3000/d/adqztjb/f09f94a7-reliability-and-maintenance?orgId=1&from=now-5y&to=now&timezone=browser&var-station=$__all\" style=\"text-decoration: none;\">\n<div style=\"background: rgb(30, 58, 138); padding: 22px; min-height: 180px; border-radius: 14px; text-align: center; color: rgb(230, 238, 247); box-sizing: border-box;\">\n<div style=\"font-size: 48px;\">🔧</div>\n<div style=\"font-size: 18px; font-weight: bold; margin-top: 10px; color: rgb(230, 238, 247);\">RELIABILITY &<br>MAINTENANCE</div>\n<div style=\"font-size: 12px; margin-top: 8px; color: rgba(230, 238, 247, 0.75);\">Failures • MTTR • Alerts</div>\n</div>\n</a>\n\n<a target=\"_blank\" href=\"http://localhost:3000/d/adlplfk/f09f9389-production-losses-pareto?orgId=1&from=now-6M&to=now&timezone=browser&var-loss_type=Waiting&var-station=HDR-MLD-L01-01\" style=\"text-decoration: none;\">\n<div style=\"background: rgb(230, 238, 247); padding: 22px; min-height: 180px; border-radius: 14px; text-align: center; box-sizing: border-box; border: 1.5px solid rgb(30, 58, 138);\">\n<div style=\"font-size: 48px;\">📉</div>\n<div style=\"font-size: 18px; font-weight: bold; margin-top: 10px; color: rgb(30, 58, 138);\">PRODUCTION LOSSES<br>& PARETO</div>\n<div style=\"font-size: 12px; margin-top: 8px; color: rgba(30, 58, 138, 0.7);\">Critical Loss Analysis</div>\n</div>\n</a>\n\n<a target=\"_blank\" href=\"http://localhost:3000/d/ad66rt2/f09f9aa8-production-alert-center?orgId=1&from=now-6h&to=now&timezone=browser&var-station=HDR-MLD-L01-02\" style=\"text-decoration: none;\">\n<div style=\"background: rgb(230, 238, 247); padding: 22px; min-height: 180px; border-radius: 14px; text-align: center; box-sizing: border-box; border: 1.5px solid rgb(30, 58, 138);\">\n<div style=\"font-size: 48px;\">🚨</div>\n<div style=\"font-size: 18px; font-weight: bold; margin-top: 10px; color: rgb(30, 58, 138);\">PRODUCTION<br>ALERT CENTER</div>\n<div style=\"font-size: 12px; margin-top: 8px; color: rgba(30, 58, 138, 0.7);\">Real-Time Monitoring</div>\n</div>\n</a>\n\n<a target=\"_blank\" href=\"http://localhost:3000/d/adl55b6/defect-rate-reel-2b-prevision-j2b-1?orgId=1&from=now-6M&to=now&timezone=browser&var-station_name=FRA-AOI-L01-01\" style=\"text-decoration: none;\">\n<div style=\"background: rgb(230, 238, 247); padding: 22px; min-height: 180px; border-radius: 14px; text-align: center; box-sizing: border-box; border: 1.5px solid rgb(30, 58, 138);\">\n<div style=\"font-size: 48px;\">🔮</div>\n<div style=\"font-size: 18px; font-weight: bold; margin-top: 10px; color: rgb(30, 58, 138);\">DEFECT RATE<br>& PRÉVISION J+1</div>\n<div style=\"font-size: 12px; margin-top: 8px; color: rgba(30, 58, 138, 0.7);\">Réel • Forecast • Trend</div>\n</div>\n</a>\n\n<a target=\"_blank\" href=\"http://localhost:3000/d/ad746tm/evolution-mae-2b-tableau-par-station?orgId=1&from=now-6h&to=now&timezone=browser&var-station=$__all\" style=\"text-decoration: none;\">\n<div style=\"background: rgb(230, 238, 247); padding: 22px; min-height: 180px; border-radius: 14px; text-align: center; box-sizing: border-box; border: 1.5px solid rgb(30, 58, 138);\">\n<div style=\"font-size: 48px;\">📐</div>\n<div style=\"font-size: 18px; font-weight: bold; margin-top: 10px; color: rgb(30, 58, 138);\">ÉVOLUTION MAE<br>PAR STATION</div>\n<div style=\"font-size: 12px; margin-top: 8px; color: rgba(30, 58, 138, 0.7);\">MAE • Précision • Modèle</div>\n</div>\n</a>\n\n</div>",
         "mode": "markdown"
       },
       "pluginVersion": "12.3.2",
@@ -511,12 +402,12 @@
     "list": []
   },
   "time": {
-    "from": "now-6M",
-    "to": "now"
+    "from": "2025-03-07T23:18:56.116Z",
+    "to": "2027-03-05T19:18:56.116Z"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "🏭 PRODUCTION COMMAND CENTER",
   "uid": "adrgmfl",
-  "version": 32
+  "version": 44
 }
