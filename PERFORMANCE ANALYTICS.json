@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 7,
+  "id": 0,
   "links": [
     {
       "asDropdown": false,
@@ -78,7 +78,8 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "fixedColor": "#1e3a8a",
+            "mode": "fixed"
           },
           "mappings": [],
           "thresholds": {
@@ -87,18 +88,6 @@
               {
                 "color": "green",
                 "value": 0
-              },
-              {
-                "color": "red",
-                "value": 0
-              },
-              {
-                "color": "orange",
-                "value": 60
-              },
-              {
-                "color": "green",
-                "value": 85
               }
             ]
           },
@@ -107,17 +96,17 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 3,
-        "w": 4,
+        "h": 7,
+        "w": 18,
         "x": 0,
         "y": 0
       },
-      "id": 1,
+      "id": 9,
       "options": {
-        "colorMode": "value",
+        "colorMode": "background",
         "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
+        "justifyMode": "center",
+        "orientation": "vertical",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
@@ -127,7 +116,11 @@
           "values": false
         },
         "showPercentChange": false,
-        "textMode": "auto",
+        "text": {
+          "titleSize": 40,
+          "valueSize": 30
+        },
+        "textMode": "value_and_name",
         "wideLayout": true
       },
       "pluginVersion": "12.3.2",
@@ -137,7 +130,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \r\n  ROUND(AVG(performance_pct)::numeric, 2) AS performance_global\r\nFROM public.performance_kpi\r\nWHERE station_name IN (${station:sqlstring})\r\n  AND $__timeFilter(production_day);",
+          "rawSql": "SELECT \r\n  ROUND(AVG(performance_pct)::numeric, 2) AS performance_global,\r\n  ROUND(MIN(performance_pct)::numeric, 2) AS \"Min\",\r\n  ROUND(MAX(performance_pct)::numeric, 2) AS \"Max\"\r\nFROM public.performance_kpi\r\nWHERE station_name IN (\r\n    SELECT s.name FROM staging.stations s\r\n    JOIN staging.line_stations ls ON ls.station_id = s.id\r\n    JOIN staging.lines l ON l.id = ls.line_id\r\n    WHERE l.name IN (${line:sqlstring})\r\n  )\r\n  AND $__timeFilter(production_day);",
           "refId": "A",
           "sql": {
             "columns": [
@@ -158,7 +151,7 @@
           }
         }
       ],
-      "title": "Performance Global",
+      "title": "Performance Rate",
       "type": "stat"
     },
     {
@@ -192,8 +185,8 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 4,
-        "x": 4,
+        "w": 6,
+        "x": 18,
         "y": 0
       },
       "id": 2,
@@ -221,7 +214,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \r\n    ROUND(SUM(run_time_hours)::numeric, 0) AS \"Run Time\"\r\nFROM public.mtbf_kpi\r\nWHERE station_name IN (${station:sqlstring});",
+          "rawSql": "SELECT \r\n    ROUND(SUM(run_time_hours)::numeric, 0) AS \"Run Time\"\r\nFROM public.mtbf_kpi\r\nWHERE station_name IN (\r\n  SELECT s.name FROM staging.stations s\r\n  JOIN staging.line_stations ls ON ls.station_id = s.id\r\n  JOIN staging.lines l ON l.id = ls.line_id\r\n  WHERE l.name IN (${line:sqlstring})\r\n)",
           "refId": "A",
           "sql": {
             "columns": [
@@ -282,10 +275,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 3,
-        "w": 4,
-        "x": 8,
-        "y": 0
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 3
       },
       "id": 3,
       "options": {
@@ -312,7 +305,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \r\n  ROUND(SUM(micro_stop_hours)::numeric, 2) AS micro_stop_hours\r\nFROM public.performance_kpi\r\nWHERE station_name IN (${station:sqlstring})\r\n  AND $__timeFilter(production_day);",
+          "rawSql": "SELECT \r\n  ROUND(SUM(micro_stop_hours)::numeric, 2) AS micro_stop_hours\r\nFROM public.performance_kpi\r\nWHERE station_name IN (\r\n    SELECT s.name FROM staging.stations s\r\n    JOIN staging.line_stations ls ON ls.station_id = s.id\r\n    JOIN staging.lines l ON l.id = ls.line_id\r\n    WHERE l.name IN (${line:sqlstring})\r\n  )\r\n  AND $__timeFilter(production_day);",
           "refId": "A",
           "sql": {
             "columns": [
@@ -335,118 +328,6 @@
       ],
       "title": "Micro Stop Total",
       "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "afm4rznroj11ce"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "showValues": false,
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 12,
-        "y": 0
-      },
-      "id": 7,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.3.2",
-      "targets": [
-        {
-          "dataset": "postgres",
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT\r\n  production_day AS time,\r\n  ROUND(SUM(run_time_hours)::numeric, 2) AS run_time,\r\n  ROUND(SUM(micro_stop_hours)::numeric, 2) AS micro_stop\r\nFROM public.performance_kpi\r\nWHERE station_name IN (${station:sqlstring})\r\n  AND $__timeFilter(production_day)\r\nGROUP BY production_day\r\nORDER BY production_day;",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "Run Time vs Micro Stop",
-      "type": "timeseries"
     },
     {
       "datasource": {
@@ -486,10 +367,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 6,
+        "h": 8,
         "w": 12,
         "x": 0,
-        "y": 3
+        "y": 7
       },
       "id": 8,
       "options": {
@@ -526,6 +407,122 @@
       ],
       "title": "Performance Status Table",
       "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "afm4rznroj11ce"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "orange",
+                "value": 65
+              },
+              {
+                "color": "yellow",
+                "value": 75
+              },
+              {
+                "color": "green",
+                "value": 85
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 7
+      },
+      "id": 5,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "horizontal",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "dataset": "postgres",
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  station_name AS station,\r\n  ROUND(AVG(performance_pct)::numeric, 2) AS performance_pct\r\nFROM public.performance_kpi\r\nWHERE station_name IN (\r\n  SELECT s.name FROM staging.stations s\r\n  JOIN staging.line_stations ls ON ls.station_id = s.id\r\n  JOIN staging.lines l ON l.id = ls.line_id\r\n  WHERE l.name IN (${line:sqlstring})\r\n)\r\nAND $__timeFilter(production_day)\r\nGROUP BY station_name\r\nORDER BY performance_pct DESC;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Performance by Station",
+      "type": "barchart"
     },
     {
       "datasource": {
@@ -597,13 +594,13 @@
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "#f5f1f1",
+                  "fixedColor": "yellow",
                   "mode": "fixed"
                 }
               },
               {
                 "id": "custom.lineWidth",
-                "value": 1
+                "value": 2
               }
             ]
           },
@@ -625,14 +622,44 @@
                 "value": 3
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Min"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Max"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
           }
         ]
       },
       "gridPos": {
-        "h": 8,
+        "h": 9,
         "w": 12,
         "x": 0,
-        "y": 9
+        "y": 15
       },
       "id": 4,
       "options": {
@@ -655,7 +682,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "WITH daily AS (\r\n    SELECT \r\n        production_day,\r\n        AVG(performance_pct) AS daily_perf\r\n    FROM public.oee_kpi\r\n    WHERE station_name IN (${station:sqlstring})\r\n      AND $__timeFilter(production_day)\r\n    GROUP BY production_day\r\n)\r\nSELECT \r\n    production_day AS time,\r\n    daily_perf AS \"Daily Performance\",\r\n    AVG(daily_perf) OVER (\r\n        ORDER BY production_day\r\n        ROWS BETWEEN 6 PRECEDING AND CURRENT ROW\r\n    ) AS \"7-Day Moving Average\"\r\nFROM daily\r\nORDER BY production_day;",
+          "rawSql": "WITH daily AS (\r\n    SELECT \r\n        production_day,\r\n        AVG(performance_pct) AS daily_perf\r\n    FROM public.oee_kpi\r\n    WHERE station_name IN (\r\n        SELECT s.name FROM staging.stations s\r\n        JOIN staging.line_stations ls ON ls.station_id = s.id\r\n        JOIN staging.lines l ON l.id = ls.line_id\r\n        WHERE l.name IN (${line:sqlstring})\r\n        )\r\n      AND $__timeFilter(production_day)\r\n    GROUP BY production_day\r\n)\r\nSELECT \r\n    production_day AS time,\r\n    daily_perf AS \"Daily Performance\",\r\n    AVG(daily_perf) OVER (\r\n        ORDER BY production_day\r\n        ROWS BETWEEN 6 PRECEDING AND CURRENT ROW\r\n    ) AS \"7-Day Moving Average\",\r\n    MIN(daily_perf) OVER () AS \"Min\",\r\n    MAX(daily_perf) OVER () AS \"Max\"\r\nFROM daily\r\nORDER BY production_day;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -687,7 +714,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
           },
           "custom": {
             "axisBorderShow": false,
@@ -695,16 +722,29 @@
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
-            "fillOpacity": 80,
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
             "lineWidth": 1,
+            "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -715,54 +755,127 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
+                "color": "green",
                 "value": 0
               },
               {
-                "color": "orange",
-                "value": 65
-              },
-              {
-                "color": "yellow",
-                "value": 75
-              },
-              {
-                "color": "green",
-                "value": 85
+                "color": "red",
+                "value": 80
               }
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Max Run Time"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-green",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    10,
+                    10
+                  ],
+                  "fill": "dash"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Min Run Time"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    10,
+                    10
+                  ],
+                  "fill": "dash"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "run_time"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-green",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "micro_stop"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
-        "h": 7,
-        "w": 20,
-        "x": 0,
-        "y": 17
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 15
       },
-      "id": 5,
+      "id": 7,
       "options": {
-        "barRadius": 0,
-        "barWidth": 0.97,
-        "fullHighlight": false,
-        "groupWidth": 0.7,
         "legend": {
           "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
-        "orientation": "auto",
-        "showValue": "auto",
-        "stacking": "none",
         "tooltip": {
           "hideZeros": false,
           "mode": "single",
           "sort": "none"
-        },
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
+        }
       },
       "pluginVersion": "12.3.2",
       "targets": [
@@ -771,7 +884,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\r\n  station_name AS station,\r\n  ROUND(AVG(performance_pct)::numeric, 2) AS performance_pct\r\nFROM public.performance_kpi\r\nWHERE $__timeFilter(production_day)\r\nGROUP BY station_name\r\nORDER BY performance_pct DESC;",
+          "rawSql": "SELECT\r\n  production_day AS time,\r\n  ROUND(SUM(run_time_hours)::numeric, 2) AS run_time,\r\n  ROUND(SUM(micro_stop_hours)::numeric, 2) AS micro_stop,\r\n  ROUND(MIN(run_time_hours) OVER ()::numeric, 2) AS \"Min Run Time\",\r\n  ROUND(MAX(run_time_hours) OVER ()::numeric, 2) AS \"Max Run Time\"\r\nFROM public.performance_kpi\r\nWHERE station_name IN (\r\n    SELECT s.name FROM staging.stations s\r\n    JOIN staging.line_stations ls ON ls.station_id = s.id\r\n    JOIN staging.lines l ON l.id = ls.line_id\r\n    WHERE l.name IN (${line:sqlstring})\r\n  )\r\n  AND $__timeFilter(production_day)\r\nGROUP BY production_day, run_time_hours\r\nORDER BY production_day;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -792,8 +905,8 @@
           }
         }
       ],
-      "title": "Performance by Station",
-      "type": "barchart"
+      "title": "Run Time vs Micro Stop",
+      "type": "timeseries"
     }
   ],
   "preload": false,
@@ -803,8 +916,27 @@
     "list": [
       {
         "current": {
-          "text": "All",
-          "value": "$__all"
+          "text": [
+            "GEN-LINE-123"
+          ],
+          "value": [
+            "GEN-LINE-123"
+          ]
+        },
+        "definition": "SELECT name FROM staging.lines ORDER BY name",
+        "includeAll": true,
+        "multi": true,
+        "name": "line",
+        "options": [],
+        "query": "SELECT name FROM staging.lines ORDER BY name",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "SF-SPI-L01-01",
+          "value": "SF-SPI-L01-01"
         },
         "definition": "select distinct station_name from public.performance_kpi;",
         "description": "",
@@ -826,5 +958,5 @@
   "timezone": "browser",
   "title": "📊PERFORMANCE ANALYTICS ",
   "uid": "ad7pzx5",
-  "version": 24
+  "version": 33
 }
