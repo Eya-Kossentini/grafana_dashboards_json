@@ -1,0 +1,266 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 20,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [],
+      "targetBlank": true,
+      "title": "Defect Rate réel + prévision J+1",
+      "tooltip": "",
+      "type": "link",
+      "url": "http://localhost:3000/d/adl55b6/defect-rate-reel-2b-prevision-j2b-1?orgId=1&from=2026-01-19T14:04:09.152Z&to=2026-04-19T13:04:09.152Z&timezone=browser&var-station_name=FRA-AOI-L01-01"
+    }
+  ],
+  "panels": [
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "afm4rznroj11ce"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "dataset": "postgres",
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n    production_day::timestamp           AS time,\r\n    AVG(ABS(ma_error))              AS \"MAE Moving Avg\",\r\n    AVG(ABS(es_error))              AS \"MAE Exp. Smoothing\"\r\nFROM forecast_results\r\nWHERE\r\n    $__timeFilter(production_day)\r\n    AND station_name IN (${station:singlequote})\r\nGROUP BY production_day\r\nORDER BY production_day;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Évolution MAE dans le temps",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "afm4rznroj11ce"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
+      "id": 1,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "dataset": "postgres",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "afm4rznroj11ce"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n    station_name                                            AS \"Station\",\r\n    ROUND(defect_rate_pct::numeric, 2)            AS \"Réel J (%)\",\r\n    ROUND(ma_forecast::numeric, 2)                AS \"Prévision MA (%)\",\r\n    ROUND(es_forecast::numeric, 2)                AS \"Prévision ES (%)\",\r\n    ROUND((ma_forecast - defect_rate_pct)::numeric, 2) AS \"Δ MA\",\r\n    ROUND((es_forecast - defect_rate_pct)::numeric, 2) AS \"Δ ES\",\r\n    ROUND(ABS(ma_error)::numeric, 3)              AS \"MAE (MA)\",\r\n    ROUND(ABS(es_error)::numeric, 3)              AS \"MAE (ES)\",\r\n    CASE\r\n        WHEN COALESCE(es_forecast, ma_forecast) > 8.73 THEN '🔴 Au-dessus seuil'\r\n        WHEN COALESCE(es_forecast, ma_forecast) > 8.16 THEN '🟡 Zone Q3'\r\n        ELSE '🟢 Normal'\r\n    END                                                     AS \"Statut J+1\"\r\nFROM forecast_results\r\nWHERE production_day = (\r\n    SELECT MAX(production_day) FROM forecast_results\r\n)\r\n    AND station_name IN (${station:sqlstring})\r\nORDER BY COALESCE(es_forecast, ma_forecast) DESC NULLS LAST;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Tableau récapitulatif — Prévision J+1 par station",
+      "type": "table"
+    }
+  ],
+  "preload": false,
+  "schemaVersion": 42,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
+        },
+        "definition": "SELECT DISTINCT station_name \nFROM public.forecast_results\nORDER BY station_name;",
+        "includeAll": true,
+        "multi": true,
+        "name": "station",
+        "options": [],
+        "query": "SELECT DISTINCT station_name \nFROM public.forecast_results\nORDER BY station_name;",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Évolution MAE + Tableau par station",
+  "uid": "ad746tm",
+  "version": 14
+}
