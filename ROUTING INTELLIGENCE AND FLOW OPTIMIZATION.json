@@ -568,7 +568,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
+        "h": 8,
         "w": 12,
         "x": 12,
         "y": 8
@@ -824,10 +824,10 @@
       {
         "current": {
           "text": [
-            "1CAP001439"
+            "All"
           ],
           "value": [
-            "1CAP001439"
+            "$__all"
           ]
         },
         "definition": "SELECT DISTINCT part_number\nFROM public.production_routing_overview\nORDER BY 1;",
@@ -843,10 +843,10 @@
       {
         "current": {
           "text": [
-            "All"
+            "SMT"
           ],
           "value": [
-            "$__all"
+            "SMT"
           ]
         },
         "definition": "SELECT DISTINCT workplan_type\nFROM public.production_routing_overview\nORDER BY 1;",
@@ -862,10 +862,10 @@
       {
         "current": {
           "text": [
-            "auto"
+            "All"
           ],
           "value": [
-            "auto"
+            "$__all"
           ]
         },
         "definition": "SELECT DISTINCT step_type\nFROM public.production_routing_overview\nORDER BY 1;",
@@ -888,5 +888,5 @@
   "timezone": "browser",
   "title": "🏭 Routing Intelligence & Flow Optimization",
   "uid": "adbshfc",
-  "version": 67
+  "version": 68
 }
