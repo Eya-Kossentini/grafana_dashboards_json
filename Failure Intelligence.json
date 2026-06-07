@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 4,
+  "id": 0,
   "links": [
     {
       "asDropdown": true,
@@ -147,7 +147,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\r\n  ROUND(AVG(NULLIF(quality_pct,0)),1) AS Quality,\r\n  CASE\r\n    WHEN AVG(NULLIF(quality_pct,0)) < 60 THEN 'CRITICAL'\r\n    WHEN AVG(NULLIF(quality_pct,0)) < 85 THEN 'ACCEPTABLE'\r\n    ELSE 'EXCELLENT'\r\n  END AS Status\r\nFROM public.quality_kpi\r\nWHERE station_name IN ($station)\r\n  AND $__timeFilter(production_day);",
+          "rawSql": "SELECT\r\n  ROUND(AVG(NULLIF(quality_pct,0)),1) AS Quality,\r\n  CASE\r\n    WHEN AVG(NULLIF(quality_pct,0)) < 60 THEN 'CRITICAL'\r\n    WHEN AVG(NULLIF(quality_pct,0)) < 85 THEN 'ACCEPTABLE'\r\n    ELSE 'EXCELLENT'\r\n  END AS Status\r\nFROM public.quality_kpi\r\nWHERE station_name IN (${station:sqlstring})\r\n  AND $__timeFilter(production_day);",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1091,9 +1091,11 @@
     "list": [
       {
         "current": {
-          "text": "All",
+          "text": [
+            "FRA-PP-L01-01"
+          ],
           "value": [
-            "$__all"
+            "FRA-PP-L01-01"
           ]
         },
         "definition": "SELECT DISTINCT station_name \nFROM public.dashboard_overview \nORDER BY station_name;",
@@ -1109,12 +1111,12 @@
     ]
   },
   "time": {
-    "from": "now-5y",
+    "from": "now-6M",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "🔧 Failure Intelligence",
   "uid": "adqztjb",
-  "version": 26
+  "version": 29
 }
